@@ -3,14 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		5282EF9511F7E3EEDBF72588 /* Pods_NeatMeet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81AA156852456A0AABBD8B03 /* Pods_NeatMeet.framework */; };
 		E16637212CC73A0800431C59 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16637172CC73A0800431C59 /* AppDelegate.swift */; };
 		E16637222CC73A0800431C59 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E166371E2CC73A0800431C59 /* SceneDelegate.swift */; };
-		E16637232CC73A0800431C59 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E166371F2CC73A0800431C59 /* ViewController.swift */; };
 		E16637242CC73A0800431C59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E16637182CC73A0800431C59 /* Assets.xcassets */; };
 		E16637262CC73A0800431C59 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E166371B2CC73A0800431C59 /* LaunchScreen.storyboard */; };
 		E16637272CC73A0800431C59 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E166371D2CC73A0800431C59 /* Main.storyboard */; };
@@ -27,8 +26,15 @@
 		E166371A2CC73A0800431C59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E166371C2CC73A0800431C59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E166371E2CC73A0800431C59 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		E166371F2CC73A0800431C59 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E17606092CC74C8F00ECF06C /* ViewControllers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ViewControllers; sourceTree = "<group>"; };
+		E176060A2CC74C9700ECF06C /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
+		E176060B2CC74CAE00ECF06C /* Utils */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Utils; sourceTree = "<group>"; };
+		E176060C2CC74CBF00ECF06C /* DataModels */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DataModels; sourceTree = "<group>"; };
+		E176060D2CC74CE100ECF06C /* Services */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Services; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		E16636FC2CC7254E00431C59 /* Frameworks */ = {
@@ -48,7 +54,6 @@
 				94CC52B32608E62171886230 /* Pods-NeatMeet.debug.xcconfig */,
 				8DCF95840A0C5C5A5DDDD65A /* Pods-NeatMeet.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -81,13 +86,17 @@
 		E16637202CC73A0800431C59 /* NeatMeet */ = {
 			isa = PBXGroup;
 			children = (
+				E176060D2CC74CE100ECF06C /* Services */,
+				E176060C2CC74CBF00ECF06C /* DataModels */,
+				E176060B2CC74CAE00ECF06C /* Utils */,
+				E176060A2CC74C9700ECF06C /* Views */,
+				E17606092CC74C8F00ECF06C /* ViewControllers */,
 				E16637172CC73A0800431C59 /* AppDelegate.swift */,
 				E16637182CC73A0800431C59 /* Assets.xcassets */,
 				E16637192CC73A0800431C59 /* Info.plist */,
 				E166371B2CC73A0800431C59 /* LaunchScreen.storyboard */,
 				E166371D2CC73A0800431C59 /* Main.storyboard */,
 				E166371E2CC73A0800431C59 /* SceneDelegate.swift */,
-				E166371F2CC73A0800431C59 /* ViewController.swift */,
 			);
 			path = NeatMeet;
 			sourceTree = "<group>";
@@ -108,6 +117,13 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E17606092CC74C8F00ECF06C /* ViewControllers */,
+				E176060A2CC74C9700ECF06C /* Views */,
+				E176060B2CC74CAE00ECF06C /* Utils */,
+				E176060C2CC74CBF00ECF06C /* DataModels */,
+				E176060D2CC74CE100ECF06C /* Services */,
 			);
 			name = NeatMeet;
 			productName = NeatMeet;
@@ -130,6 +146,7 @@
 				};
 			};
 			buildConfigurationList = E16636FA2CC7254E00431C59 /* Build configuration list for PBXProject "NeatMeet" */;
+			compatibilityVersion = "Xcode 15.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -209,7 +226,6 @@
 			files = (
 				E16637212CC73A0800431C59 /* AppDelegate.swift in Sources */,
 				E16637222CC73A0800431C59 /* SceneDelegate.swift in Sources */,
-				E16637232CC73A0800431C59 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
