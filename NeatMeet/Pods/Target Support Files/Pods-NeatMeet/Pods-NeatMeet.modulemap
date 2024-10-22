@@ -1,0 +1,6 @@
+framework module Pods_NeatMeet {
+  umbrella header "Pods-NeatMeet-umbrella.h"
+
+  export *
+  module * { export * }
+}
