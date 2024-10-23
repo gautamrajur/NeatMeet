@@ -42,8 +42,10 @@ class ProfileView: UIView {
         editButton = UIButton(type: .system)
         editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
         editButton.tintColor = .white
+        editButton.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         editButton.translatesAutoresizingMaskIntoConstraints = false
         editButton.showsMenuAsPrimaryAction = true
+        editButton.clipsToBounds = true
         self.addSubview(editButton)
     }
 
@@ -87,9 +89,8 @@ class ProfileView: UIView {
             imageContacts.heightAnchor.constraint(equalToConstant: 100),
             imageContacts.widthAnchor.constraint(equalTo: imageContacts.heightAnchor),
 
-            // Edit button constraints - overlaps the image in the bottom-right corner
             editButton.bottomAnchor.constraint(equalTo: imageContacts.bottomAnchor, constant: -8),
-            editButton.trailingAnchor.constraint(equalTo: imageContacts.trailingAnchor, constant: -8),
+            editButton.trailingAnchor.constraint(equalTo: imageContacts.trailingAnchor, constant: -4),
             editButton.heightAnchor.constraint(equalToConstant: 24),
             editButton.widthAnchor.constraint(equalToConstant: 24),
 
