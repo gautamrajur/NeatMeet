@@ -12,6 +12,7 @@ class ProfileView: UIView {
     var textFieldEmail: UITextField!
     var buttonSave: UIButton!
     var imageContacts: UIImageView!
+    var editButtonFrame: UIView!
     var editButton: UIButton!
     
     override init(frame: CGRect) {
@@ -22,6 +23,7 @@ class ProfileView: UIView {
         setupFieldName()
         setupFieldEmail()
         setUpButtonSave()
+        setUpEditButtonFrame()
         setupEditButton()
         
         initConstraints()
@@ -31,18 +33,29 @@ class ProfileView: UIView {
     func setupProfileImage() {
         imageContacts = UIImageView()
         imageContacts.image = UIImage(systemName: "person.fill")
-        imageContacts.tintColor = .black
-        imageContacts.contentMode = .scaleAspectFit
+        imageContacts.tintColor = .darkGray
+        imageContacts.layer.cornerRadius = 50
+        imageContacts.layer.borderWidth = 1
+        imageContacts.layer.borderColor = UIColor.lightGray.cgColor
+        imageContacts.contentMode = .scaleAspectFill
         imageContacts.clipsToBounds = true
         imageContacts.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(imageContacts)
     }
+    
+    func setUpEditButtonFrame(){
+        editButtonFrame = UIView()
+        editButtonFrame.backgroundColor = .lightGray
+        editButtonFrame.layer.cornerRadius = 15
+        editButtonFrame.clipsToBounds = true
+        editButtonFrame.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(editButtonFrame)
+    }
 
     func setupEditButton() {
         editButton = UIButton(type: .system)
-        editButton.setImage(UIImage(systemName: "pencil"), for: .normal)
-        editButton.tintColor = .white
-        editButton.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        editButton.setImage(UIImage(systemName: "camera.fill"), for: .normal)
+        editButton.tintColor = .black
         editButton.translatesAutoresizingMaskIntoConstraints = false
         editButton.showsMenuAsPrimaryAction = true
         editButton.clipsToBounds = true
@@ -88,10 +101,15 @@ class ProfileView: UIView {
             imageContacts.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 20),
             imageContacts.heightAnchor.constraint(equalToConstant: 100),
             imageContacts.widthAnchor.constraint(equalTo: imageContacts.heightAnchor),
+            
+            editButtonFrame.bottomAnchor.constraint(equalTo: imageContacts.bottomAnchor, constant: 0),
+            editButtonFrame.trailingAnchor.constraint(equalTo: imageContacts.trailingAnchor, constant: 0),
+            editButtonFrame.heightAnchor.constraint(equalToConstant: 30),
+            editButtonFrame.widthAnchor.constraint(equalToConstant: 30),
 
-            editButton.bottomAnchor.constraint(equalTo: imageContacts.bottomAnchor, constant: -8),
-            editButton.trailingAnchor.constraint(equalTo: imageContacts.trailingAnchor, constant: -4),
-            editButton.heightAnchor.constraint(equalToConstant: 24),
+            editButton.centerXAnchor.constraint(equalTo: editButtonFrame.centerXAnchor),
+            editButton.centerYAnchor.constraint(equalTo: editButtonFrame.centerYAnchor),
+            editButton.heightAnchor.constraint(equalToConstant: 18),
             editButton.widthAnchor.constraint(equalToConstant: 24),
 
             textFieldName.topAnchor.constraint(equalTo: imageContacts.topAnchor),
