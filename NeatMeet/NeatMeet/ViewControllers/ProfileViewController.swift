@@ -21,7 +21,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate &
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        profileScreen.imageContacts.menu = getMenuImagePicker()
+        profileScreen.editButton.menu = getMenuImagePicker()
         profileScreen.textFieldName.text = "User 1"
         profileScreen.textFieldEmail.text = "user1@gmail.com"
         
@@ -80,13 +80,10 @@ extension ProfileViewController:PHPickerViewControllerDelegate{
             if item.canLoadObject(ofClass: UIImage.self){
                 item.loadObject(ofClass: UIImage.self, completionHandler: { (image, error) in
                     DispatchQueue.main.async{
-                        if let uwImage = image as? UIImage{
-                            self.profileScreen.imageContacts.setImage(
-                                uwImage.withRenderingMode(.alwaysOriginal),
-                                for: .normal
-                            )
-                            self.pickedImage = uwImage
-                        }
+                        if let uwImage = image as? UIImage {
+                                                   self.profileScreen.imageContacts.image = uwImage
+                                                   self.pickedImage = uwImage
+                                               }
                     }
                 })
             }
