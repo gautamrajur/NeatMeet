@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     var navController: UINavigationController?
     var selectedState: String = "Massachusetts"
     var selectedCity: String = "Boston"
+    var events: [Event] = []
 
     let states = ["Massachusetts", "California", "New York"]
     let citiesByState = [
@@ -37,10 +38,20 @@ class ViewController: UIViewController {
 
         landingView.stateButton.addTarget(
             self, action: #selector(stateButtonTapped), for: .touchUpInside)
+        landingView.stateDropButton.addTarget(
+            self, action: #selector(stateButtonTapped), for: .touchUpInside)
         landingView.cityButton.addTarget(
+            self, action: #selector(cityButtonTapped), for: .touchUpInside)
+        landingView.cityDropButton.addTarget(
             self, action: #selector(cityButtonTapped), for: .touchUpInside)
 
         landingView.profileImage.menu = getProfileImageMenu()
+
+        landingView.eventTableView.delegate = self
+        landingView.eventTableView.dataSource = self
+        landingView.eventTableView.separatorStyle = .none
+        
+        events.append(Event(id: "1", name: "Event 1", location: "Huntington Ave"))
     }
 
     func getProfileImageMenu() -> UIMenu {

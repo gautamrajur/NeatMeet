@@ -15,6 +15,7 @@ class LandingView: UIView {
     var cityButton: UIButton!
     var cityDropButton: UIButton!
     var stateDropButton: UIButton!
+    var eventTableView: UITableView!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,6 +25,7 @@ class LandingView: UIView {
         setUpSearchBar()
         setUpStatePicker()
         setUpCityPicker()
+        setUpEventTableView()
 
         initConstraints()
     }
@@ -84,11 +86,20 @@ class LandingView: UIView {
         addSubview(cityDropButton)
     }
 
+    private func setUpEventTableView() {
+        eventTableView = UITableView()
+        eventTableView.register(
+            EventTableViewCell.self, forCellReuseIdentifier: "events")
+        eventTableView.translatesAutoresizingMaskIntoConstraints = false
+        eventTableView.backgroundColor = .gray
+        addSubview(eventTableView)
+    }
+
     private func initConstraints() {
         NSLayoutConstraint.activate([
             // Profile Image
             profileImage.leadingAnchor.constraint(
-                equalTo: self.leadingAnchor, constant: 16),
+                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             profileImage.topAnchor.constraint(
                 equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 0),
             profileImage.widthAnchor.constraint(equalToConstant: 40),
@@ -129,6 +140,16 @@ class LandingView: UIView {
                 equalTo: stateDropButton.leadingAnchor, constant: -4),
             stateButton.centerYAnchor.constraint(
                 equalTo: stateDropButton.centerYAnchor),
+
+            // Event Table View
+            eventTableView.topAnchor.constraint(
+                equalTo: stateButton.bottomAnchor, constant: 16),
+            eventTableView.leadingAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8),
+            eventTableView.bottomAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            eventTableView.trailingAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
         ])
     }
 
