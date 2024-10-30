@@ -25,6 +25,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let event = events[indexPath.row]
         cell.selectionStyle = .none
         cell.eventNameLabel?.text = event.name
+        cell.eventLocationLabel?.text = event.location
+        cell.eventDateTimeLabel?.text = event.dateTime
 
         return cell
     }
