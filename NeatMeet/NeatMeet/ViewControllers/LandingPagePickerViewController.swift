@@ -27,8 +27,13 @@ class LandingPagePickerViewController: UIViewController {
         landingPagePickerView.pickerView.delegate = self
         landingPagePickerView.pickerView.dataSource = self
 
-        landingPagePickerView.doneButton.target = self
-        landingPagePickerView.doneButton.action = #selector(doneButtonTapped)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Done", style: .done, target: self,
+            action: #selector(doneButtonTapped))
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "Cancel", style: .plain, target: self,
+            action: #selector(cancelButtonTapped))
 
         if let selectedIndex = options.firstIndex(of: selectedOption) {
             landingPagePickerView.pickerView.selectRow(
@@ -40,6 +45,10 @@ class LandingPagePickerViewController: UIViewController {
         NotificationCenter.default.post(
             name: notificationName, object: selectedOption)
 
+        dismiss(animated: true)
+    }
+
+    @objc private func cancelButtonTapped() {
         dismiss(animated: true)
     }
 
