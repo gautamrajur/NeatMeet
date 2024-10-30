@@ -9,7 +9,7 @@ import UIKit
 
 class LandingView: UIView {
 
-    var profileImage: UIImageView!
+    var profileImage: UIButton!
     var searchBar: UISearchBar!
     var stateButton: UIButton!
     var cityButton: UIButton!
@@ -29,11 +29,14 @@ class LandingView: UIView {
     }
 
     private func setUpProfileImage() {
-        profileImage = UIImageView()
-        profileImage.image = UIImage(systemName: "person.fill")
-        profileImage.contentMode = .scaleAspectFill
+        profileImage = UIButton()
+        profileImage.setImage(UIImage(systemName: "person.fill"), for: .normal)
+        profileImage.imageView?.contentMode = .scaleAspectFill
+        profileImage.contentHorizontalAlignment = .fill
+        profileImage.contentVerticalAlignment = .fill
         profileImage.clipsToBounds = true
         profileImage.layer.cornerRadius = 20
+        profileImage.showsMenuAsPrimaryAction = true
         profileImage.tintColor = .gray
         profileImage.layer.borderWidth = 1
         profileImage.layer.borderColor = UIColor.lightGray.cgColor
@@ -72,7 +75,7 @@ class LandingView: UIView {
         cityButton.tintColor = .black
         cityButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(cityButton)
-        
+
         cityDropButton = UIButton(type: .system)
         let cityDropImage = UIImage(systemName: "chevron.down")
         cityDropButton.setImage(cityDropImage, for: .normal)
@@ -80,39 +83,52 @@ class LandingView: UIView {
         cityDropButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(cityDropButton)
     }
-    
+
     private func initConstraints() {
         NSLayoutConstraint.activate([
             // Profile Image
-            profileImage.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            profileImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 0),
+            profileImage.leadingAnchor.constraint(
+                equalTo: self.leadingAnchor, constant: 16),
+            profileImage.topAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 0),
             profileImage.widthAnchor.constraint(equalToConstant: 40),
             profileImage.heightAnchor.constraint(equalToConstant: 40),
 
             // Search Bar
-            searchBar.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 12),
-            searchBar.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            searchBar.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor),
+            searchBar.leadingAnchor.constraint(
+                equalTo: profileImage.trailingAnchor, constant: 12),
+            searchBar.trailingAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            searchBar.centerYAnchor.constraint(
+                equalTo: profileImage.centerYAnchor),
 
             // City Drop Button
-            cityDropButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24),
-            cityDropButton.centerYAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
+            cityDropButton.trailingAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24),
+            cityDropButton.centerYAnchor.constraint(
+                equalTo: searchBar.bottomAnchor, constant: 8),
             cityDropButton.widthAnchor.constraint(equalToConstant: 18),
             cityDropButton.heightAnchor.constraint(equalToConstant: 18),
 
             // City Button
-            cityButton.trailingAnchor.constraint(equalTo: cityDropButton.leadingAnchor, constant: -4),
-            cityButton.centerYAnchor.constraint(equalTo: cityDropButton.centerYAnchor),
+            cityButton.trailingAnchor.constraint(
+                equalTo: cityDropButton.leadingAnchor, constant: -4),
+            cityButton.centerYAnchor.constraint(
+                equalTo: cityDropButton.centerYAnchor),
 
             // State Drop Button
-            stateDropButton.trailingAnchor.constraint(equalTo: cityButton.leadingAnchor, constant: -16),
-            stateDropButton.centerYAnchor.constraint(equalTo: cityDropButton.centerYAnchor),
+            stateDropButton.trailingAnchor.constraint(
+                equalTo: cityButton.leadingAnchor, constant: -16),
+            stateDropButton.centerYAnchor.constraint(
+                equalTo: cityDropButton.centerYAnchor),
             stateDropButton.widthAnchor.constraint(equalToConstant: 18),
             stateDropButton.heightAnchor.constraint(equalToConstant: 18),
 
             // State Button
-            stateButton.trailingAnchor.constraint(equalTo: stateDropButton.leadingAnchor, constant: -4),
-            stateButton.centerYAnchor.constraint(equalTo: stateDropButton.centerYAnchor),
+            stateButton.trailingAnchor.constraint(
+                equalTo: stateDropButton.leadingAnchor, constant: -4),
+            stateButton.centerYAnchor.constraint(
+                equalTo: stateDropButton.centerYAnchor),
         ])
     }
 

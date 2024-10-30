@@ -39,11 +39,33 @@ class ViewController: UIViewController {
             self, action: #selector(stateButtonTapped), for: .touchUpInside)
         landingView.cityButton.addTarget(
             self, action: #selector(cityButtonTapped), for: .touchUpInside)
+
+        landingView.profileImage.menu = getProfileImageMenu()
+    }
+
+    func getProfileImageMenu() -> UIMenu {
+        let menuItems = [
+            UIAction(
+                title: "Profile",
+                handler: { (_) in self.profileImageTapped() }),
+            UIAction(
+                title: "Logout",
+                handler: { (_) in self.logout() }),
+        ]
+        return UIMenu(title: "", children: menuItems)
+    }
+
+    func profileImageTapped() {
+
+    }
+
+    func logout() {
+
     }
 
     @objc private func handleStateSelected(notification: Notification) {
         let state = (notification.object as! String)
-        if(state != selectedState){
+        if state != selectedState {
             selectedState = state
             selectedCity = citiesByState[selectedState]?.first ?? ""
             landingView.stateButton.setTitle(selectedState, for: .normal)
@@ -72,11 +94,11 @@ class ViewController: UIViewController {
         navController?.modalPresentationStyle = .pageSheet
 
         if let bottomPickerSheet = navController?.sheetPresentationController {
-                bottomPickerSheet.detents = [.medium()]
-                
-                bottomPickerSheet.prefersGrabberVisible = false
-                navController?.isModalInPresentation = true
-            }
+            bottomPickerSheet.detents = [.medium()]
+
+            bottomPickerSheet.prefersGrabberVisible = false
+            navController?.isModalInPresentation = true
+        }
     }
 
     @objc func stateButtonTapped() {
