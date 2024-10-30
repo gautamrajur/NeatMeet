@@ -13,8 +13,6 @@ class LandingView: UIView {
     var searchBar: UISearchBar!
     var stateButton: UIButton!
     var cityButton: UIButton!
-    var statePicker: UIPickerView!
-    var cityPicker: UIPickerView!
     var cityDropButton: UIButton!
     var stateDropButton: UIButton!
 
@@ -66,11 +64,6 @@ class LandingView: UIView {
         stateDropButton.tintColor = .black
         stateDropButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stateDropButton)
-
-        statePicker = UIPickerView()
-        statePicker.translatesAutoresizingMaskIntoConstraints = false
-        statePicker.isHidden = true
-        addSubview(statePicker)
     }
 
     private func setUpCityPicker() {
@@ -86,11 +79,6 @@ class LandingView: UIView {
         cityDropButton.tintColor = .black
         cityDropButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(cityDropButton)
-        
-        cityPicker = UIPickerView()
-        cityPicker.translatesAutoresizingMaskIntoConstraints = false
-        cityPicker.isHidden = true
-        addSubview(cityPicker)
     }
     
     private func initConstraints() {
@@ -125,18 +113,6 @@ class LandingView: UIView {
             // State Button
             stateButton.trailingAnchor.constraint(equalTo: stateDropButton.leadingAnchor, constant: -4),
             stateButton.centerYAnchor.constraint(equalTo: stateDropButton.centerYAnchor),
-
-            // State Picker
-            statePicker.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            statePicker.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            statePicker.topAnchor.constraint(equalTo: stateButton.bottomAnchor, constant: 8),
-            statePicker.heightAnchor.constraint(equalToConstant: 200),
-
-            // City Picker
-            cityPicker.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            cityPicker.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            cityPicker.topAnchor.constraint(equalTo: cityButton.bottomAnchor, constant: 8),
-            cityPicker.heightAnchor.constraint(equalToConstant: 200),
         ])
     }
 

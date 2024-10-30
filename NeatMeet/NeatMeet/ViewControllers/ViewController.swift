@@ -8,8 +8,18 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
+
     let landingView = LandingView()
+    var navController: UINavigationController?
+    var selectedState: String = "Massachusetts"
+    var selectedCity: String = "Boston"
+
+    let states = ["Massachusetts", "California", "New York"]
+    let citiesByState = [
+        "Massachusetts": ["Boston", "Cambridge", "Springfield"],
+        "California": ["Los Angeles", "San Francisco", "San Diego"],
+        "New York": ["New York City", "Buffalo", "Rochester"],
+    ]
 
     override func loadView() {
         view = landingView
@@ -17,7 +27,73 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleStateSelected(notification:)),
+            name: .selectState, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleCitySelected(notification:)),
+            name: .selectCity, object: nil)
+
+        landingView.stateButton.addTarget(
+            self, action: #selector(stateButtonTapped), for: .touchUpInside)
+        landingView.cityButton.addTarget(
+            self, action: #selector(cityButtonTapped), for: .touchUpInside)
     }
 
+    @objc private func handleStateSelected(notification: Notification) {
+        let state = (notification.object as! String)
+        selectedState = state
+        selectedCity = citiesByState[selectedState]?.first ?? ""
+        landingView.stateButton.setTitle(selectedState, for: .normal)
+        landingView.cityButton.setTitle(selectedCity, for: .normal)
+    }
+
+    @objc private func handleCitySelected(notification: Notification) {
+        let city = (notification.object as! String)
+        selectedCity = city
+        landingView.cityButton.setTitle(selectedCity, for: .normal)
+    }
+
+    func setUpBottomPickerSheet(
+        options: [String], selectedOption: String?,
+        notificationName: NSNotification.Name
+    ) {
+        let finalSelectedOption = selectedOption ?? options.first ?? ""
+
+        let pickerVC = LandingPagePickerViewController(
+            options: options, selectedOption: finalSelectedOption,
+            notificationName: notificationName
+        )
+
+        navController = UINavigationController(rootViewController: pickerVC)
+        navController?.modalPresentationStyle = .pageSheet
+
+        if let bottomPickerSheet = navController?.sheetPresentationController {
+                bottomPickerSheet.detents = [.medium()]
+                
+                bottomPickerSheet.prefersGrabberVisible = false
+                navController?.isModalInPresentation = true
+            }
+    }
+
+    @objc func stateButtonTapped() {
+        setUpBottomPickerSheet(
+            options: states, selectedOption: selectedState,
+            notificationName: .selectState)
+        if let navController = navController {
+            present(navController, animated: true)
+        }
+    }
+
+    @objc func cityButtonTapped() {
+        let cities =
+            citiesByState[selectedState] ?? citiesByState["Massachusetts"] ?? []
+        setUpBottomPickerSheet(
+            options: cities, selectedOption: selectedCity,
+            notificationName: .selectCity)
+        if let navController = navController {
+            present(navController, animated: true)
+        }
+    }
 }
