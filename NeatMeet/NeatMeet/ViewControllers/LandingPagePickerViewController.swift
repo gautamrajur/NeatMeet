@@ -29,11 +29,17 @@ class LandingPagePickerViewController: UIViewController {
 
         landingPagePickerView.doneButton.target = self
         landingPagePickerView.doneButton.action = #selector(doneButtonTapped)
+
+        if let selectedIndex = options.firstIndex(of: selectedOption) {
+            landingPagePickerView.pickerView.selectRow(
+                selectedIndex, inComponent: 0, animated: false)
+        }
     }
 
     @objc private func doneButtonTapped() {
-        NotificationCenter.default.post(name: notificationName, object: selectedOption)
-        
+        NotificationCenter.default.post(
+            name: notificationName, object: selectedOption)
+
         dismiss(animated: true)
     }
 
@@ -42,20 +48,30 @@ class LandingPagePickerViewController: UIViewController {
     }
 }
 
-extension LandingPagePickerViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+extension LandingPagePickerViewController: UIPickerViewDelegate,
+    UIPickerViewDataSource
+{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
 
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(
+        _ pickerView: UIPickerView, numberOfRowsInComponent component: Int
+    ) -> Int {
         return options.count
     }
 
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    func pickerView(
+        _ pickerView: UIPickerView, titleForRow row: Int,
+        forComponent component: Int
+    ) -> String? {
         return options[row]
     }
 
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func pickerView(
+        _ pickerView: UIPickerView, didSelectRow row: Int,
+        inComponent component: Int
+    ) {
         selectedOption = options[row]
     }
 }

@@ -43,10 +43,12 @@ class ViewController: UIViewController {
 
     @objc private func handleStateSelected(notification: Notification) {
         let state = (notification.object as! String)
-        selectedState = state
-        selectedCity = citiesByState[selectedState]?.first ?? ""
-        landingView.stateButton.setTitle(selectedState, for: .normal)
-        landingView.cityButton.setTitle(selectedCity, for: .normal)
+        if(state != selectedState){
+            selectedState = state
+            selectedCity = citiesByState[selectedState]?.first ?? ""
+            landingView.stateButton.setTitle(selectedState, for: .normal)
+            landingView.cityButton.setTitle(selectedCity, for: .normal)
+        }
     }
 
     @objc private func handleCitySelected(notification: Notification) {
