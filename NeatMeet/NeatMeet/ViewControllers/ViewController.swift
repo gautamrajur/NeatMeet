@@ -28,6 +28,17 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if TokenManager.shared.token == nil {
+            print("calling logging screen")
+            showLoginScreen()
+        } else {
+            events.append(
+                Event(
+                    id: "1", name: "Charles River", location: "504 Stephen St.",
+                    dateTime: "12 Nov - 3:15 PM",
+                    image: UIImage(named: "RiverCleaning"), likeCount: 125))
+        }
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleStateSelected(notification:)),
@@ -51,11 +62,13 @@ class ViewController: UIViewController {
         landingView.eventTableView.dataSource = self
         landingView.eventTableView.separatorStyle = .none
 
-        events.append(
-            Event(
-                id: "1", name: "Charles River", location: "504 Stephen St.",
-                dateTime: "12 Nov - 3:15 PM",
-                image: UIImage(named: "RiverCleaning"), likeCount: 125))
+        
+    }
+    
+    func showLoginScreen() {
+        let loginVC = LoginViewController()
+        loginVC.modalPresentationStyle = .fullScreen
+        present(loginVC, animated: true)
     }
 
     func getProfileImageMenu() -> UIMenu {
