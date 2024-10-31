@@ -57,6 +57,7 @@ class LoginViewController: UIViewController {
      //       setLoading(true)
         
         notificationCenter.post(name: .loggedIn, object: nil)
+        dismiss(animated: true)
             
     }
     
