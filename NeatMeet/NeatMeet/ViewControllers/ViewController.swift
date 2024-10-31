@@ -50,8 +50,12 @@ class ViewController: UIViewController {
         landingView.eventTableView.delegate = self
         landingView.eventTableView.dataSource = self
         landingView.eventTableView.separatorStyle = .none
-        
-        events.append(Event(id: "1", name: "Neighborhood: Mission Main", location: "504 Stephen St.", dateTime: "12 Nov - 3:15 PM"))
+
+        events.append(
+            Event(
+                id: "1", name: "Charles River", location: "504 Stephen St.",
+                dateTime: "12 Nov - 3:15 PM",
+                image: UIImage(named: "RiverCleaning"), likeCount: 125))
     }
 
     func getProfileImageMenu() -> UIMenu {

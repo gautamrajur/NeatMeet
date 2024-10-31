@@ -27,7 +27,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         cell.eventNameLabel?.text = event.name
         cell.eventLocationLabel?.text = event.location
         cell.eventDateTimeLabel?.text = event.dateTime
-
+        cell.eventImageView?.image = event.image
+        cell.eventLikeLabel?.text = (String)(event.likeCount!)
         return cell
     }
 

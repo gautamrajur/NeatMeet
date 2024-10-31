@@ -24,6 +24,9 @@ class EventTableViewCell: UITableViewCell {
         setUpEventNameLabel()
         setUpEventLocationLabel()
         setUpEventDateTimeLabel()
+        setUpEventLikeLabel()
+        setUpEventLikeImageView()
+
         initConstraints()
     }
 
@@ -64,6 +67,21 @@ class EventTableViewCell: UITableViewCell {
         wrapperCellView.addSubview(eventDateTimeLabel)
     }
 
+    func setUpEventLikeLabel() {
+        eventLikeLabel = UILabel()
+        eventLikeLabel.font = UIFont(name: "AvenirNext-Regular", size: 10)
+        eventLikeLabel.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCellView.addSubview(eventLikeLabel)
+    }
+
+    func setUpEventLikeImageView() {
+        eventLikeImageView = UIImageView()
+        eventLikeImageView.image = UIImage(systemName: "hand.thumbsup.fill")
+        eventLikeImageView.tintColor = .black
+        eventLikeImageView.translatesAutoresizingMaskIntoConstraints = false
+        wrapperCellView.addSubview(eventLikeImageView)
+    }
+
     func initConstraints() {
 
         NSLayoutConstraint.activate([
@@ -89,7 +107,7 @@ class EventTableViewCell: UITableViewCell {
 
             //Event Name
             eventNameLabel.leadingAnchor.constraint(
-                equalTo: eventImageView.trailingAnchor, constant: 6),
+                equalTo: eventImageView.trailingAnchor, constant: 14),
             eventNameLabel.topAnchor.constraint(
                 equalTo: wrapperCellView.topAnchor, constant: 20),
             eventNameLabel.trailingAnchor.constraint(
@@ -97,15 +115,28 @@ class EventTableViewCell: UITableViewCell {
 
             //Event Location
             eventLocationLabel.leadingAnchor.constraint(
-                equalTo: eventImageView.trailingAnchor, constant: 6),
+                equalTo: eventImageView.trailingAnchor, constant: 14),
             eventLocationLabel.topAnchor.constraint(
                 equalTo: eventNameLabel.bottomAnchor, constant: 6),
 
             //Event Date Time
             eventDateTimeLabel.leadingAnchor.constraint(
-                equalTo: eventImageView.trailingAnchor, constant: 6),
+                equalTo: eventImageView.trailingAnchor, constant: 14),
             eventDateTimeLabel.topAnchor.constraint(
                 equalTo: eventLocationLabel.bottomAnchor, constant: 6),
+
+            // Event Like Label
+            eventLikeLabel.trailingAnchor.constraint(
+                equalTo: eventLikeImageView.leadingAnchor, constant: -4),
+            eventLikeLabel.bottomAnchor.constraint(equalTo: eventLikeImageView.bottomAnchor),
+
+            // Event Like Icon
+            eventLikeImageView.trailingAnchor.constraint(
+                equalTo: wrapperCellView.trailingAnchor, constant: -10),
+            eventLikeImageView.bottomAnchor.constraint(
+                equalTo: wrapperCellView.bottomAnchor, constant: -10),
+            eventLikeImageView.heightAnchor.constraint(equalToConstant: 15),
+            eventLikeImageView.widthAnchor.constraint(equalToConstant: 15),
 
             wrapperCellView.heightAnchor.constraint(equalToConstant: 120),
         ])
