@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5282EF9511F7E3EEDBF72588 /* Pods_NeatMeet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81AA156852456A0AABBD8B03 /* Pods_NeatMeet.framework */; };
+		E12EE29D2CD1D1AF002FCB41 /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12EE29C2CD1D1AB002FCB41 /* NotificationNames.swift */; };
 		E16637212CC73A0800431C59 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16637172CC73A0800431C59 /* AppDelegate.swift */; };
 		E16637222CC73A0800431C59 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E166371E2CC73A0800431C59 /* SceneDelegate.swift */; };
 		E16637242CC73A0800431C59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E16637182CC73A0800431C59 /* Assets.xcassets */; };
@@ -19,6 +20,7 @@
 		81AA156852456A0AABBD8B03 /* Pods_NeatMeet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NeatMeet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DCF95840A0C5C5A5DDDD65A /* Pods-NeatMeet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NeatMeet.release.xcconfig"; path = "Target Support Files/Pods-NeatMeet/Pods-NeatMeet.release.xcconfig"; sourceTree = "<group>"; };
 		94CC52B32608E62171886230 /* Pods-NeatMeet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NeatMeet.debug.xcconfig"; path = "Target Support Files/Pods-NeatMeet/Pods-NeatMeet.debug.xcconfig"; sourceTree = "<group>"; };
+		E12EE29C2CD1D1AB002FCB41 /* NotificationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationNames.swift; sourceTree = "<group>"; };
 		E16636FF2CC7254E00431C59 /* NeatMeet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeatMeet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E16637172CC73A0800431C59 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E16637182CC73A0800431C59 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -86,6 +88,7 @@
 		E16637202CC73A0800431C59 /* NeatMeet */ = {
 			isa = PBXGroup;
 			children = (
+				E12EE29C2CD1D1AB002FCB41 /* NotificationNames.swift */,
 				E176060D2CC74CE100ECF06C /* Services */,
 				E176060C2CC74CBF00ECF06C /* DataModels */,
 				E176060B2CC74CAE00ECF06C /* Utils */,
@@ -224,6 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E12EE29D2CD1D1AF002FCB41 /* NotificationNames.swift in Sources */,
 				E16637212CC73A0800431C59 /* AppDelegate.swift in Sources */,
 				E16637222CC73A0800431C59 /* SceneDelegate.swift in Sources */,
 			);
