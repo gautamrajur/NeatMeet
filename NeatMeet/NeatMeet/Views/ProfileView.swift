@@ -110,7 +110,7 @@ class ProfileView: UIView {
             eventTableView.register(
                 EventTableViewCell.self, forCellReuseIdentifier: "events")
             eventTableView.translatesAutoresizingMaskIntoConstraints = false
-            eventTableView.backgroundColor = .gray
+            eventTableView.backgroundColor = .white
             addSubview(eventTableView)
         }
 
