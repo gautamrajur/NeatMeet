@@ -88,6 +88,11 @@ class ViewController: UIViewController {
     }
 
     func profileImageTapped() {
+        let profileController = ProfileViewController()
+        profileController.delegate = self
+        navigationController?.pushViewController(profileController, animated: true)
+        
+        
 
     }
 
