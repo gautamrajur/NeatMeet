@@ -3,7 +3,6 @@
 //  NeatMeet
 //
 //  Created by Damyant Jain on 10/30/24.
-//
 import UIKit
 
 struct Event {
