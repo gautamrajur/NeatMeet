@@ -7,10 +7,14 @@
 import UIKit
 import PhotosUI
 
-class ProfileViewController: UIViewController, UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+    
+   
     let profileScreen = ProfileView()
     var delegate:ViewController!
     var pickedImage:UIImage?
+    var events: [Event] = []
+    
     
     
     override func loadView() {
@@ -22,11 +26,27 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate &
         super.viewDidLoad()
         view.backgroundColor = .white
         profileScreen.editButton.menu = getMenuImagePicker()
-        profileScreen.textFieldName.text = "User 1"
-        profileScreen.textFieldEmail.text = "user1@gmail.com"
+        setUpProfileData()
+       
+        
+        profileScreen.eventTableView.delegate = self
+        profileScreen.eventTableView.dataSource = self
+        profileScreen.eventTableView.separatorStyle = .none
+        events.append(
+                   Event(
+                       id: "1", name: "Charles River", location: "504 Stephen St.",
+                       dateTime: "12 Nov - 3:15 PM",
+                       image: UIImage(named: "RiverCleaning"), likeCount: 125))
+        
         
         
         // Do any additional setup after loading the view.
+    }
+    
+    func setUpProfileData(){
+        profileScreen.textFieldName.text = "User 1"
+        profileScreen.textFieldEmail.text = "user1@gmail.com"
+        
     }
     
     func getMenuImagePicker() -> UIMenu{
@@ -90,4 +110,32 @@ extension ProfileViewController:PHPickerViewControllerDelegate{
         }
     }
     
+}
+
+
+extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int)
+        -> Int
+    {
+        return events.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
+        -> UITableViewCell
+    {
+        let cell =
+            tableView.dequeueReusableCell(
+                withIdentifier: "events", for: indexPath)
+            as! EventTableViewCell
+        let event = events[indexPath.row]
+        cell.selectionStyle = .none
+        cell.eventNameLabel?.text = event.name
+        cell.eventLocationLabel?.text = event.location
+        cell.eventDateTimeLabel?.text = event.dateTime
+        cell.eventImageView?.image = event.image
+        cell.eventLikeLabel?.text = (String)(event.likeCount!)
+        return cell
+    }
+
 }

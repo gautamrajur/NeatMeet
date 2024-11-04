@@ -14,6 +14,8 @@ class ProfileView: UIView {
     var imageContacts: UIImageView!
     var editButtonFrame: UIView!
     var editButton: UIButton!
+    var myPostsLabel: UILabel!
+    var eventTableView: UITableView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,11 +27,19 @@ class ProfileView: UIView {
         setUpButtonSave()
         setUpEditButtonFrame()
         setupEditButton()
+        setupMyPostsLabel()
+        setUpEventTableView()
         
         initConstraints()
     }
 
-    // Change imageContacts to UIImageView
+    func setupMyPostsLabel(){
+        myPostsLabel = UILabel()
+        myPostsLabel.text = "My Posts"
+        myPostsLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        myPostsLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(myPostsLabel)
+    }
     func setupProfileImage() {
         imageContacts = UIImageView()
         imageContacts.image = UIImage(systemName: "person.fill")
@@ -94,6 +104,16 @@ class ProfileView: UIView {
         textFieldEmail.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldEmail)
     }
+    
+    func setUpEventTableView() {
+            eventTableView = UITableView()
+            eventTableView.register(
+                EventTableViewCell.self, forCellReuseIdentifier: "events")
+            eventTableView.translatesAutoresizingMaskIntoConstraints = false
+            eventTableView.backgroundColor = .gray
+            addSubview(eventTableView)
+        }
+
 
     func initConstraints() {
         NSLayoutConstraint.activate([
@@ -126,6 +146,20 @@ class ProfileView: UIView {
             buttonSave.topAnchor.constraint(equalTo: textFieldEmail.bottomAnchor, constant: 10),
             buttonSave.heightAnchor.constraint(equalToConstant: 20),
             buttonSave.widthAnchor.constraint(equalToConstant: 70),
+            
+            myPostsLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 14),
+                   myPostsLabel.topAnchor.constraint(equalTo: imageContacts.bottomAnchor, constant: 30),
+                   myPostsLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -5),
+
+            
+            eventTableView.topAnchor.constraint(
+                            equalTo: myPostsLabel.bottomAnchor, constant: 16),
+            eventTableView.leadingAnchor.constraint(
+                            equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8),
+            eventTableView.bottomAnchor.constraint(
+                            equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            eventTableView.trailingAnchor.constraint(
+                            equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8)
         ])
     }
 
