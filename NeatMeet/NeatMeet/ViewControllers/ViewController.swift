@@ -30,23 +30,41 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        handleLogin()
+        addNotificationCenter()
+        configureButtonActions()
+        configureUIElements()
+        getEvents()
+    }
+
+    private func handleLogin() {
         if TokenManager.shared.token == nil {
             print("calling logging screen")
             showLoginScreen()
         } else {
             getEvents()
         }
+    }
 
+    private func configureUIElements() {
+        landingView.profileImage.menu = getProfileImageMenu()
+        landingView.eventTableView.delegate = self
+        landingView.eventTableView.dataSource = self
+        landingView.eventTableView.separatorStyle = .none
+        landingView.searchBar.delegate = self
+
+        let tapRecognizer = UITapGestureRecognizer(
+            target: self, action: #selector(hideKeyboardOnTap))
+        tapRecognizer.cancelsTouchesInView = false
+    }
+
+    @objc func hideKeyboardOnTap() {
+        view.endEditing(true)
+    }
+
+    private func configureButtonActions() {
         landingView.addButton.addTarget(
             self, action: #selector(navigateToCreatePost), for: .touchUpInside)
-
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(handleStateSelected(notification:)),
-            name: .selectState, object: nil)
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(handleCitySelected(notification:)),
-            name: .selectCity, object: nil)
-
         landingView.stateButton.addTarget(
             self, action: #selector(stateButtonTapped), for: .touchUpInside)
         landingView.stateDropButton.addTarget(
@@ -55,16 +73,15 @@ class ViewController: UIViewController {
             self, action: #selector(cityButtonTapped), for: .touchUpInside)
         landingView.cityDropButton.addTarget(
             self, action: #selector(cityButtonTapped), for: .touchUpInside)
+    }
 
-        landingView.profileImage.menu = getProfileImageMenu()
-
-        landingView.eventTableView.delegate = self
-        landingView.eventTableView.dataSource = self
-        landingView.eventTableView.separatorStyle = .none
-        landingView.searchBar.delegate = self
-
-        getEvents()
-
+    private func addNotificationCenter() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleStateSelected(notification:)),
+            name: .selectState, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleCitySelected(notification:)),
+            name: .selectCity, object: nil)
     }
 
     func getEvents() {
