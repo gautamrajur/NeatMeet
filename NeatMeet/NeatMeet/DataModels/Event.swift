@@ -6,10 +6,10 @@
 import UIKit
 
 struct Event {
-    var id: String?
-    var name: String?
-    var location: String?
-    var dateTime: String?
+    var id: String
+    var name: String
+    var location: String
+    var dateTime: String
     var image: UIImage?
-    var likeCount: Int?
+    var likeCount: Int
 }

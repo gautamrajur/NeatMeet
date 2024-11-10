@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     var navController: UINavigationController?
     var selectedState: String = "Massachusetts"
     var selectedCity: String = "Boston"
+    var displayedEvents: [Event] = []
     var events: [Event] = []
 
     let states = ["Massachusetts", "California", "New York"]
@@ -60,6 +61,7 @@ class ViewController: UIViewController {
         landingView.eventTableView.delegate = self
         landingView.eventTableView.dataSource = self
         landingView.eventTableView.separatorStyle = .none
+        landingView.searchBar.delegate = self
 
         getEvents()
 
@@ -74,6 +76,7 @@ class ViewController: UIViewController {
                     dateTime: "12 Nov - 3:15 PM",
                     image: UIImage(named: "RiverCleaning"), likeCount: 125))
         }
+        displayedEvents = events
     }
 
     @objc func navigateToCreatePost() {
