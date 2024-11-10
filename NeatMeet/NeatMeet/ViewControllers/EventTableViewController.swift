@@ -32,4 +32,13 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
+    func tableView(
+        _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
+    ) {
+        let event = events[indexPath.row]
+        let showPostViewController = ShowPostViewController()
+        navigationController?.pushViewController(
+            showPostViewController, animated: true)
+    }
+
 }
