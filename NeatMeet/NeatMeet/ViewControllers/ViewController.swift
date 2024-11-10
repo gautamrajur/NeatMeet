@@ -28,17 +28,16 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         if TokenManager.shared.token == nil {
             print("calling logging screen")
             showLoginScreen()
         } else {
-            events.append(
-                Event(
-                    id: "1", name: "Charles River", location: "504 Stephen St.",
-                    dateTime: "12 Nov - 3:15 PM",
-                    image: UIImage(named: "RiverCleaning"), likeCount: 125))
+            getEvents()
         }
+
+        landingView.addButton.addTarget(
+            self, action: #selector(navigateToCreatePost), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleStateSelected(notification:)),
@@ -61,14 +60,27 @@ class ViewController: UIViewController {
         landingView.eventTableView.delegate = self
         landingView.eventTableView.dataSource = self
         landingView.eventTableView.separatorStyle = .none
+        
+        getEvents()
 
-        events.append(
-            Event(
-                id: "1", name: "Charles River", location: "504 Stephen St.",
-                dateTime: "12 Nov - 3:15 PM",
-                image: UIImage(named: "RiverCleaning"), likeCount: 125))
     }
-    
+
+    func getEvents() {
+        for _ in 0..<10 {
+            events.append(
+                Event(
+                    id: "1", name: "Charles River", location: "504 Stephen St.",
+                    dateTime: "12 Nov - 3:15 PM",
+                    image: UIImage(named: "RiverCleaning"), likeCount: 125))
+        }
+    }
+
+    @objc func navigateToCreatePost() {
+        let createPostViewController = CreatePostViewController()
+        navigationController?.pushViewController(
+            createPostViewController, animated: true)
+    }
+
     func showLoginScreen() {
         let loginVC = LoginViewController()
         loginVC.modalPresentationStyle = .fullScreen
@@ -90,9 +102,8 @@ class ViewController: UIViewController {
     func profileImageTapped() {
         let profileController = ProfileViewController()
         profileController.delegate = self
-        navigationController?.pushViewController(profileController, animated: true)
-        
-        
+        navigationController?.pushViewController(
+            profileController, animated: true)
 
     }
 

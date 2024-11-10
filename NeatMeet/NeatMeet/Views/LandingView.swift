@@ -16,6 +16,7 @@ class LandingView: UIView {
     var cityDropButton: UIButton!
     var stateDropButton: UIButton!
     var eventTableView: UITableView!
+    var addButton: UIButton!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,7 +27,8 @@ class LandingView: UIView {
         setUpStatePicker()
         setUpCityPicker()
         setUpEventTableView()
-
+        setUpAddButton()
+        
         initConstraints()
     }
 
@@ -95,6 +97,13 @@ class LandingView: UIView {
         addSubview(eventTableView)
     }
 
+    private func setUpAddButton() {
+        addButton = UIButton(type: .custom)
+        addButton.setImage(UIImage(named: "plus"), for: .normal)
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(addButton)
+    }
+
     private func initConstraints() {
         NSLayoutConstraint.activate([
             // Profile Image
@@ -150,6 +159,13 @@ class LandingView: UIView {
                 equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8),
             eventTableView.trailingAnchor.constraint(
                 equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+
+            addButton.trailingAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            addButton.bottomAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            addButton.widthAnchor.constraint(equalToConstant: 60),
+            addButton.heightAnchor.constraint(equalToConstant: 60),
         ])
     }
 
