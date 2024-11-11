@@ -139,6 +139,7 @@ class ViewController: UIViewController {
             selectedCity = citiesByState[selectedState]?.first ?? ""
             landingView.stateButton.setTitle(selectedState, for: .normal)
             landingView.cityButton.setTitle(selectedCity, for: .normal)
+            filterEvents()
         }
     }
 
@@ -146,6 +147,11 @@ class ViewController: UIViewController {
         let city = (notification.object as! String)
         selectedCity = city
         landingView.cityButton.setTitle(selectedCity, for: .normal)
+        filterEvents()
+    }
+
+    private func filterEvents() {
+
     }
 
     func setUpBottomPickerSheet(
