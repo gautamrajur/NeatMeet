@@ -5,6 +5,8 @@
 ## User settings
 xcuserdata/
 */.DS_Store
+NeatMeet/.DS_Store
+NeatMeet/*/.DS_Store
 
 ## Obj-C/Swift specific
 *.hmap
