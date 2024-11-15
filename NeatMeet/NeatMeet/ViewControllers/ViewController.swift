@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     var navController: UINavigationController?
     var selectedState: String = "Massachusetts"
     var selectedCity: String = "Boston"
+    var displayedEvents: [Event] = []
     var events: [Event] = []
 
     let states = ["Massachusetts", "California", "New York"]
@@ -28,25 +29,42 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        handleLogin()
+        addNotificationCenter()
+        configureButtonActions()
+        configureUIElements()
+        getEvents()
+    }
+
+    private func handleLogin() {
         if TokenManager.shared.token == nil {
             print("calling logging screen")
             showLoginScreen()
         } else {
-            events.append(
-                Event(
-                    id: "1", name: "Charles River", location: "504 Stephen St.",
-                    dateTime: "12 Nov - 3:15 PM",
-                    image: UIImage(named: "RiverCleaning"), likeCount: 125))
+            getEvents()
         }
+    }
 
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(handleStateSelected(notification:)),
-            name: .selectState, object: nil)
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(handleCitySelected(notification:)),
-            name: .selectCity, object: nil)
+    private func configureUIElements() {
+        landingView.profileImage.menu = getProfileImageMenu()
+        landingView.eventTableView.delegate = self
+        landingView.eventTableView.dataSource = self
+        landingView.eventTableView.separatorStyle = .none
+        landingView.searchBar.delegate = self
 
+        let tapRecognizer = UITapGestureRecognizer(
+            target: self, action: #selector(hideKeyboardOnTap))
+        tapRecognizer.cancelsTouchesInView = false
+    }
+
+    @objc func hideKeyboardOnTap() {
+        view.endEditing(true)
+    }
+
+    private func configureButtonActions() {
+        landingView.addButton.addTarget(
+            self, action: #selector(navigateToCreatePost), for: .touchUpInside)
         landingView.stateButton.addTarget(
             self, action: #selector(stateButtonTapped), for: .touchUpInside)
         landingView.stateDropButton.addTarget(
@@ -55,20 +73,35 @@ class ViewController: UIViewController {
             self, action: #selector(cityButtonTapped), for: .touchUpInside)
         landingView.cityDropButton.addTarget(
             self, action: #selector(cityButtonTapped), for: .touchUpInside)
-
-        landingView.profileImage.menu = getProfileImageMenu()
-
-        landingView.eventTableView.delegate = self
-        landingView.eventTableView.dataSource = self
-        landingView.eventTableView.separatorStyle = .none
-
-        events.append(
-            Event(
-                id: "1", name: "Charles River", location: "504 Stephen St.",
-                dateTime: "12 Nov - 3:15 PM",
-                image: UIImage(named: "RiverCleaning"), likeCount: 125))
     }
-    
+
+    private func addNotificationCenter() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleStateSelected(notification:)),
+            name: .selectState, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleCitySelected(notification:)),
+            name: .selectCity, object: nil)
+    }
+
+    func getEvents() {
+        for i in 15..<25 {
+            events.append(
+                Event(
+                    id: "\(i)", name: "Charles River \(i)",
+                    location: "504 Stephen St.",
+                    dateTime: "12 Nov - 3:15 PM",
+                    image: UIImage(named: "RiverCleaning"), likeCount: 125))
+        }
+        displayedEvents = events
+    }
+
+    @objc func navigateToCreatePost() {
+        let createPostViewController = CreatePostViewController()
+        navigationController?.pushViewController(
+            createPostViewController, animated: true)
+    }
+
     func showLoginScreen() {
         let loginVC = LoginViewController()
         loginVC.modalPresentationStyle = .fullScreen
@@ -90,9 +123,8 @@ class ViewController: UIViewController {
     func profileImageTapped() {
         let profileController = ProfileViewController()
         profileController.delegate = self
-        navigationController?.pushViewController(profileController, animated: true)
-        
-        
+        navigationController?.pushViewController(
+            profileController, animated: true)
 
     }
 
@@ -107,6 +139,7 @@ class ViewController: UIViewController {
             selectedCity = citiesByState[selectedState]?.first ?? ""
             landingView.stateButton.setTitle(selectedState, for: .normal)
             landingView.cityButton.setTitle(selectedCity, for: .normal)
+            filterEvents()
         }
     }
 
@@ -114,6 +147,11 @@ class ViewController: UIViewController {
         let city = (notification.object as! String)
         selectedCity = city
         landingView.cityButton.setTitle(selectedCity, for: .normal)
+        filterEvents()
+    }
+
+    private func filterEvents() {
+
     }
 
     func setUpBottomPickerSheet(

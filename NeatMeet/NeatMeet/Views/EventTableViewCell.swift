@@ -88,7 +88,7 @@ class EventTableViewCell: UITableViewCell {
             
             //Wrapper Cell View
             wrapperCellView.topAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.topAnchor),
+                equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8),
             wrapperCellView.leadingAnchor.constraint(
                 equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 10),
             wrapperCellView.trailingAnchor.constraint(
