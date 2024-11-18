@@ -53,11 +53,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     
-    var name: String = ""
-    var location: String = ""
-    var dateTime: String = " "
-    var image: UIImage?
-    var likeCount: Int = 0
     
     func getAllEvents() async {
             do {
@@ -67,21 +62,26 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 ).collection("events").getDocuments()
                 for document in snapshot.documents {
                     let data = document.data()
-                    if let id = data["id"] as? String,
-                       let name = data["name"] as? String,
-                       let location = data["location"] as? String,
-                       let dateTime = data["dateTime"] as? String,
-                       let image = data["image"] as? UIImage,
-                       let likeCount = data["likeCount"] as? Int
+                    if let name = data["name"] as? String,
+                       let likesCount = ["likesCount"] as? Int,
+                       let datePublished = ["datePublished"] as? Date,
+                       let address = data["location"] as? String,
+                       let city = data["city"] as? String,
+                       let state = data["state"] as? String,
+                       let imageUrl = data["imageUrls"] as? String,
+                       let image = data["image"] as? UIImage
                     {
                         let event = Event(
-                            id: id, name: name,
-                            location: location,
-                            dateTime: dateTime,
-                            image: image,
-                            likeCount: likeCount)
+                            name: name,
+                            likesCount: likesCount,
+                            datePublished: datePublished,
+                            address: address,
+                            city: city,
+                            state: state,
+                            imageUrl: imageUrl,
+                            image: image)
                         events.append(event)
-                        events.sort { $0.dateTime > $1.dateTime }
+                        events.sort { $0.datePublished > $1.datePublished }
                         self.profileScreen.eventTableView.reloadData()
                     }
                 }
