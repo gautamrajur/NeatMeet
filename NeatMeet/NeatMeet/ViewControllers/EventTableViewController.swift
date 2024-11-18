@@ -25,10 +25,13 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let event = displayedEvents[indexPath.row]
         cell.selectionStyle = .none
         cell.eventNameLabel?.text = event.name
-        cell.eventLocationLabel?.text = event.location
-        cell.eventDateTimeLabel?.text = event.dateTime
+        cell.eventLocationLabel?.text = event.address
+        cell.eventDateTimeLabel?.text = event.datePublished.description
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d, HH:mm"
+        cell.eventDateTimeLabel?.text = dateFormatter.string(from: event.datePublished)
         cell.eventImageView?.image = event.image
-        cell.eventLikeLabel?.text = (String)(event.likeCount)
+        cell.eventLikeLabel?.text = (String)(event.likesCount)
         return cell
     }
 
