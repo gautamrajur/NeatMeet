@@ -32,13 +32,18 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         profileScreen.eventTableView.delegate = self
         profileScreen.eventTableView.dataSource = self
         profileScreen.eventTableView.separatorStyle = .none
-//        events.append(
-//                   Event(
-//                       id: "1", name: "Charles River", location: "504 Stephen St.",
-//                       dateTime: "12 Nov - 3:15 PM",
-//                       image: UIImage(named: "RiverCleaning"), likeCount: 125))
+        let event = Event(
+            name: "Charles River",
+            likesCount: Int.random(in: 10...100),
+            datePublished: Date(),
+            address: "123 Longwood Ave",
+            city: "City",
+            state: "State",
+            imageUrl: "https://example.com/image.jpg",
+            image: UIImage(named: "RiverCleaning")!
+        )
         
-        
+        events.append(event)
         
         // Do any additional setup after loading the view.
     }
