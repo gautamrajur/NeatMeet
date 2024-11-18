@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class ViewController: UIViewController {
 
@@ -15,6 +16,7 @@ class ViewController: UIViewController {
     var selectedCity: String = "Boston"
     var displayedEvents: [Event] = []
     var events: [Event] = []
+    let db = Firestore.firestore()
 
     let states = ["Massachusetts", "California", "New York"]
     let citiesByState = [
@@ -86,15 +88,61 @@ class ViewController: UIViewController {
 
     func getEvents() {
         for i in 15..<25 {
-            events.append(
-                Event(
-                    id: "\(i)", name: "Charles River \(i)",
-                    location: "504 Stephen St.",
-                    dateTime: "12 Nov - 3:15 PM",
-                    image: UIImage(named: "RiverCleaning"), likeCount: 125))
+            let event = Event(
+                name: "Charles River \(i)",
+                likesCount: Int.random(in: 10...100),
+                datePublished: Date().addingTimeInterval(TimeInterval(i * -50000)),
+                address: "123 Longwood Ave \(i)",
+                city: "City \(i)",
+                state: "State \(i % 5)",
+                imageUrl: "https://example.com/image\(i).jpg",
+                image: UIImage(named: "RiverCleaning")!
+            )
+            
+            events.append(event)
         }
         displayedEvents = events
     }
+
+    func getAllEvents() async {
+            let docRef = db.collection("events").order(by: "datePublished", descending: false)
+            
+            do {
+                let snapshot = try await docRef.getDocuments()
+                events.removeAll()
+                
+                for document in snapshot.documents {
+                    let data = document.data()
+                    
+                    if let name = data["name"] as? String,
+                       let likesCount = data["likesCount"] as? Int,
+                       let timestamp = data["datePublished"] as? Timestamp,
+                       let address = data["address"] as? String,
+                       let city = data["city"] as? String,
+                       let state = data["state"] as? String,
+                       let imageUrl = data["imageUrl"] as? String {
+                        
+                        events.append(
+                            Event(
+                                name: name,
+                                likesCount: likesCount,
+                                datePublished: timestamp.dateValue(),
+                                address: address,
+                                city: city,
+                                state: state,
+                                imageUrl: imageUrl,
+                                image: UIImage(named: imageUrl)!
+                            )
+                        )
+                    }
+                }
+                
+                landingView.eventTableView.reloadData()
+                
+            } catch {
+                print("Error getting documents: \(error)")
+            }
+        }
 
     @objc func navigateToCreatePost() {
         let createPostViewController = CreatePostViewController()
