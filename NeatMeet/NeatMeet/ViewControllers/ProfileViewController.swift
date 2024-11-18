@@ -36,7 +36,18 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         profileScreen.eventTableView.delegate = self
         profileScreen.eventTableView.dataSource = self
         profileScreen.eventTableView.separatorStyle = .none
+        let event = Event(
+            name: "Charles River",
+            likesCount: Int.random(in: 10...100),
+            datePublished: Date(),
+            address: "123 Longwood Ave",
+            city: "City",
+            state: "State",
+            imageUrl: "https://example.com/image.jpg",
+            image: UIImage(named: "RiverCleaning")!
+        )
         
+        events.append(event)
         
         // Do any additional setup after loading the view.
     }
@@ -170,10 +181,10 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         let event = events[indexPath.row]
         cell.selectionStyle = .none
         cell.eventNameLabel?.text = event.name
-        cell.eventLocationLabel?.text = event.location
-        cell.eventDateTimeLabel?.text = event.dateTime
+        cell.eventLocationLabel?.text = event.address
+        cell.eventDateTimeLabel?.text = event.datePublished.description
         cell.eventImageView?.image = event.image
-        cell.eventLikeLabel?.text = (String)(event.likeCount)
+        cell.eventLikeLabel?.text = (String)(event.likesCount)
         return cell
     }
 
