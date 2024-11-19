@@ -92,6 +92,7 @@ class ViewController: UIViewController {
                 name: "Charles River \(i)",
                 likesCount: Int.random(in: 10...100),
                 datePublished: Date().addingTimeInterval(TimeInterval(i * -50000)),
+                publishedBy: "summer@gmail.com",
                 address: "123 Longwood Ave \(i)",
                 city: "City \(i)",
                 state: "State \(i % 5)",
@@ -120,13 +121,15 @@ class ViewController: UIViewController {
                        let address = data["address"] as? String,
                        let city = data["city"] as? String,
                        let state = data["state"] as? String,
-                       let imageUrl = data["imageUrl"] as? String {
+                       let imageUrl = data["imageUrl"] as? String,
+                       let publishedBy = data["publishedBy"] as? String{
                         
                         events.append(
                             Event(
                                 name: name,
                                 likesCount: likesCount,
                                 datePublished: timestamp.dateValue(),
+                                publishedBy: publishedBy,
                                 address: address,
                                 city: city,
                                 state: state,
