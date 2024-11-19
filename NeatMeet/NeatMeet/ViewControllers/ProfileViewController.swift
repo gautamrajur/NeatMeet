@@ -6,6 +6,8 @@
 //
 import UIKit
 import PhotosUI
+import FirebaseAuth
+import FirebaseFirestore
 
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
@@ -14,6 +16,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var delegate:ViewController!
     var pickedImage:UIImage?
     var events: [Event] = []
+    var loggedInUser = User(email: "", name: "")
+    let db = Firestore.firestore()
     
     
     
@@ -32,21 +36,51 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         profileScreen.eventTableView.delegate = self
         profileScreen.eventTableView.dataSource = self
         profileScreen.eventTableView.separatorStyle = .none
-        let event = Event(
-            name: "Charles River",
-            likesCount: Int.random(in: 10...100),
-            datePublished: Date(),
-            address: "123 Longwood Ave",
-            city: "City",
-            state: "State",
-            imageUrl: "https://example.com/image.jpg",
-            image: UIImage(named: "RiverCleaning")!
-        )
         
-        events.append(event)
         
         // Do any additional setup after loading the view.
     }
+    
+    
+    
+    func getAllEvents() async {
+            do {
+                events.removeAll()
+                let snapshot = try await db.collection("events")
+                    .whereField("publishedBy", isEqualTo: loggedInUser.email)
+                    .getDocuments()
+                for document in snapshot.documents {
+                    let data = document.data()
+                    if let name = data["name"] as? String,
+                       let likesCount = ["likesCount"] as? Int,
+                       let datePublished = ["datePublished"] as? Date,
+                       let address = data["location"] as? String,
+                       let city = data["city"] as? String,
+                       let state = data["state"] as? String,
+                       let imageUrl = data["imageUrls"] as? String,
+                       let image = data["image"] as? UIImage,
+                       let publishedBy = data["publishedBy"] as? String
+                    {
+                        let event = Event(
+                            name: name,
+                            likesCount: likesCount,
+                            datePublished: datePublished,
+                            publishedBy: publishedBy,
+                            address: address,
+                            city: city,
+                            state: state,
+                            imageUrl: imageUrl,
+                            image: image)
+                        events.append(event)
+                        events.sort { $0.datePublished > $1.datePublished }
+                        self.profileScreen.eventTableView.reloadData()
+                    }
+                }
+
+            } catch {
+                print("Error getting documents: \(error)")
+            }
+        }
     
     func setUpProfileData(){
         profileScreen.textFieldName.text = "User 1"
@@ -66,6 +100,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
            
            return UIMenu(title: "Select source", children: menuItems)
        }
+    
+    
        
     
     
