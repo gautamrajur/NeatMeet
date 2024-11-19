@@ -30,16 +30,27 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         super.viewDidLoad()
         view.backgroundColor = .white
         profileScreen.editButton.menu = getMenuImagePicker()
-        setUpProfileData()
+        displayAllEvents()
+        displayUserDetails()
        
         
         profileScreen.eventTableView.delegate = self
         profileScreen.eventTableView.dataSource = self
         profileScreen.eventTableView.separatorStyle = .none
         
-        
-        // Do any additional setup after loading the view.
     }
+    
+    @objc func displayAllEvents() {
+           Task {
+               await getAllEvents()
+           }
+       }
+    
+    @objc func displayUserDetails() {
+           Task {
+               await setUpProfileData()
+           }
+       }
     
     
     
@@ -82,9 +93,40 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             }
         }
     
-    func setUpProfileData(){
-        profileScreen.textFieldName.text = "User 1"
-        profileScreen.textFieldEmail.text = "user1@gmail.com"
+    
+
+    
+    func setUpProfileData() async{
+//        profileScreen.textFieldName.text = "User 1"
+//        profileScreen.textFieldEmail.text = "user1@gmail.com"
+        do {
+               if loggedInUser.email.isEmpty {
+                   print("Logged-in user email is empty.")
+                   return
+               }
+
+               let snapshot = try await db.collection("users")
+                   .whereField("email", isEqualTo: loggedInUser.email)
+                   .getDocuments()
+
+               if snapshot.documents.isEmpty {
+                   print("No user found with the given email.")
+                   return
+               }
+
+               if let document = snapshot.documents.first {
+                   let data = document.data()
+                   if let name = data["name"] as? String,
+                      let email = data["email"] as? String {
+                       profileScreen.textFieldName.text = name
+                       profileScreen.textFieldEmail.text = email
+                   } else {
+                       print("Invalid data format.")
+                   }
+               }
+           } catch {
+               print("Error fetching user data: \(error)")
+           }
         
     }
     
