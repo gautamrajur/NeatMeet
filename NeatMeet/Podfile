@@ -6,6 +6,6 @@ target 'NeatMeet' do
   use_frameworks!
 
   # Pods for NeatMeet
-  pod 'Alamofire'
+  pod 'FirebaseStorageUI'
 
 end
