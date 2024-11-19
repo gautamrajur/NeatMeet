@@ -57,9 +57,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     func getAllEvents() async {
             do {
                 events.removeAll()
-                let snapshot = try await db.collection("user").document(
-                    loggedInUser.email
-                ).collection("events").getDocuments()
+                let snapshot = try await db.collection("events")
+                    .whereField("email", isEqualTo: loggedInUser.email)
+                    .getDocuments()
                 for document in snapshot.documents {
                     let data = document.data()
                     if let name = data["name"] as? String,

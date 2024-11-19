@@ -12,9 +12,10 @@ struct User {
     init(email: String, name: String) {
           self.email = email
           self.name = name
+        
       }
       
     init(from firebaseUser: FirebaseAuth.User) {
-          self.init(email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "Unknown")
+        self.init(email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "Unknown")
       }
 }
