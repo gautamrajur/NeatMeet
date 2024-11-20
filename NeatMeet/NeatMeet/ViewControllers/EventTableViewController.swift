@@ -15,17 +15,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     {
         return displayedEvents.count
     }
-
-    func tableView(
-        _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
-    ) {
-        let event = displayedEvents[indexPath.row]
-        let showPostViewController = ShowPostViewController()
-        navigationController?.pushViewController(
-            showPostViewController, animated: true)
-    }
     
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell =
             tableView.dequeueReusableCell(
@@ -45,6 +35,15 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_placeholder"))
         }
         return cell
+    }
+
+    func tableView(
+        _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
+    ) {
+        let event = displayedEvents[indexPath.row]
+        let showPostViewController = ShowPostViewController()
+        navigationController?.pushViewController(
+            showPostViewController, animated: true)
     }
 
 }

@@ -6,6 +6,7 @@
 import UIKit
 
 struct Event {
+    var id: String
     var name: String
     var likesCount: Int
     var datePublished: Date

@@ -73,6 +73,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                        let publishedBy = data["publishedBy"] as? String
                     {
                         let event = Event(
+                            id: document.documentID,
                             name: name,
                             likesCount: likesCount,
                             datePublished: datePublished,

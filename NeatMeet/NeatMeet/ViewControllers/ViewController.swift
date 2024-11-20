@@ -89,6 +89,7 @@ class ViewController: UIViewController {
     func getEvents() {
         for i in 15..<25 {
             let event = Event(
+                id: String(i),
                 name: "Charles River \(i)",
                 likesCount: Int.random(in: 10...100),
                 datePublished: Date().addingTimeInterval(
@@ -111,10 +112,8 @@ class ViewController: UIViewController {
         do {
             let snapshot = try await docRef.getDocuments()
             events.removeAll()
-
             for document in snapshot.documents {
                 let data = document.data()
-
                 if let name = data["name"] as? String,
                     let likesCount = data["likesCount"] as? Int,
                     let timestamp = data["datePublished"] as? Timestamp,
@@ -124,9 +123,9 @@ class ViewController: UIViewController {
                     let imageUrl = data["imageUrl"] as? String,
                     let publishedBy = data["publishedBy"] as? String
                 {
-
                     events.append(
                         Event(
+                            id: document.documentID,
                             name: name,
                             likesCount: likesCount,
                             datePublished: timestamp.dateValue(),
