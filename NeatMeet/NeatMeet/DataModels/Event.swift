@@ -6,6 +6,7 @@
 import UIKit
 
 struct Event {
+    var id: String
     var name: String
     var likesCount: Int
     var datePublished: Date
@@ -14,5 +15,4 @@ struct Event {
     var city: String
     var state: String
     var imageUrl: String
-    var image: UIImage
 }

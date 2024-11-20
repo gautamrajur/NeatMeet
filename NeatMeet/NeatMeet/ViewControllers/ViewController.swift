@@ -5,8 +5,8 @@
 //  Created by Damyant Jain on 10/21/24.
 //
 
-import UIKit
 import FirebaseFirestore
+import UIKit
 
 class ViewController: UIViewController {
 
@@ -36,7 +36,7 @@ class ViewController: UIViewController {
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
-        getEvents()
+        Task { await getAllEvents() }
     }
 
     private func handleLogin() {
@@ -89,63 +89,62 @@ class ViewController: UIViewController {
     func getEvents() {
         for i in 15..<25 {
             let event = Event(
+                id: String(i),
                 name: "Charles River \(i)",
                 likesCount: Int.random(in: 10...100),
-                datePublished: Date().addingTimeInterval(TimeInterval(i * -50000)),
+                datePublished: Date().addingTimeInterval(
+                    TimeInterval(i * -50000)),
                 publishedBy: "summer@gmail.com",
                 address: "123 Longwood Ave \(i)",
                 city: "City \(i)",
                 state: "State \(i % 5)",
-                imageUrl: "https://example.com/image\(i).jpg",
-                image: UIImage(named: "RiverCleaning")!
+                imageUrl: "https://example.com/image\(i).jpg"
             )
-            
+
             events.append(event)
         }
         displayedEvents = events
     }
 
     func getAllEvents() async {
-            let docRef = db.collection("events").order(by: "datePublished", descending: false)
-            
-            do {
-                let snapshot = try await docRef.getDocuments()
-                events.removeAll()
-                
-                for document in snapshot.documents {
-                    let data = document.data()
-                    
-                    if let name = data["name"] as? String,
-                       let likesCount = data["likesCount"] as? Int,
-                       let timestamp = data["datePublished"] as? Timestamp,
-                       let address = data["address"] as? String,
-                       let city = data["city"] as? String,
-                       let state = data["state"] as? String,
-                       let imageUrl = data["imageUrl"] as? String,
-                       let publishedBy = data["publishedBy"] as? String{
-                        
-                        events.append(
-                            Event(
-                                name: name,
-                                likesCount: likesCount,
-                                datePublished: timestamp.dateValue(),
-                                publishedBy: publishedBy,
-                                address: address,
-                                city: city,
-                                state: state,
-                                imageUrl: imageUrl,
-                                image: UIImage(named: imageUrl)!
-                            )
+        let docRef = db.collection("events").order(
+            by: "datePublished", descending: false)
+        do {
+            let snapshot = try await docRef.getDocuments()
+            events.removeAll()
+            for document in snapshot.documents {
+                let data = document.data()
+                if let name = data["name"] as? String,
+                    let likesCount = data["likesCount"] as? Int,
+                    let timestamp = data["datePublished"] as? Timestamp,
+                    let address = data["address"] as? String,
+                    let city = data["city"] as? String,
+                    let state = data["state"] as? String,
+                    let imageUrl = data["imageUrl"] as? String,
+                    let publishedBy = data["publishedBy"] as? String
+                {
+                    events.append(
+                        Event(
+                            id: document.documentID,
+                            name: name,
+                            likesCount: likesCount,
+                            datePublished: timestamp.dateValue(),
+                            publishedBy: publishedBy,
+                            address: address,
+                            city: city,
+                            state: state,
+                            imageUrl: imageUrl
                         )
-                    }
+                    )
                 }
-                
-                landingView.eventTableView.reloadData()
-                
-            } catch {
-                print("Error getting documents: \(error)")
             }
+            displayedEvents = events
+            landingView.eventTableView.reloadData()
+
+        } catch {
+            print("Error getting documents: \(error)")
         }
+    }
 
     @objc func navigateToCreatePost() {
         let createPostViewController = CreatePostViewController()
