@@ -29,7 +29,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d, HH:mm"
-        cell.eventDateTimeLabel?.text = dateFormatter.string(from: event.datePublished)
+        cell.eventDateTimeLabel?.text = dateFormatter.string(from: event.eventDate)
         cell.eventLikeLabel?.text = "\(event.likesCount)"
         if let imageUrl = URL(string: event.imageUrl) {
             cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_placeholder"))
