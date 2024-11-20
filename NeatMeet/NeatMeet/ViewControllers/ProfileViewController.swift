@@ -70,7 +70,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                        let state = data["state"] as? String,
                        let imageUrl = data["imageUrls"] as? String,
                        let image = data["image"] as? UIImage,
-                       let publishedBy = data["publishedBy"] as? String
+                       let publishedBy = data["publishedBy"] as? String,
+                       let eventDate = data["eventDate"] as? Date
                     {
                         let event = Event(
                             id: document.documentID,
@@ -81,9 +82,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                             address: address,
                             city: city,
                             state: state,
-                            imageUrl: imageUrl)
+                            imageUrl: imageUrl,
+                            eventDate: eventDate
+                        )
                         events.append(event)
-                        events.sort { $0.datePublished > $1.datePublished }
+                        events.sort { $0.eventDate > $1.eventDate }
                         self.profileScreen.eventTableView.reloadData()
                     }
                 }
@@ -215,7 +218,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         cell.eventNameLabel?.text = event.name
         cell.eventLocationLabel?.text = event.address
-        cell.eventDateTimeLabel?.text = event.datePublished.description
+        cell.eventDateTimeLabel?.text = event.eventDate.description
         cell.eventLikeLabel?.text = (String)(event.likesCount)
         return cell
     }

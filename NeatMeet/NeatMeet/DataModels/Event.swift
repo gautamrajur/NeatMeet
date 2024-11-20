@@ -15,4 +15,5 @@ struct Event {
     var city: String
     var state: String
     var imageUrl: String
+    var eventDate: Date
 }
