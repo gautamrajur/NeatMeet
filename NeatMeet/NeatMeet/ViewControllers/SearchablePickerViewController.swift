@@ -14,9 +14,7 @@ class SearchablePickerViewController<T: Searchable>: UIViewController, UITableVi
     private var filteredOptions: [T]
     private var selectedOption: T?
     private let notificationName: NSNotification.Name
-
-    private let tableView = UITableView()
-    private let searchBar = UISearchBar()
+    let searchablePickerView = SearchablePickerView()
 
     init(options: [T], selectedOption: T?, notificationName: NSNotification.Name) {
         self.allOptions = options
@@ -29,41 +27,18 @@ class SearchablePickerViewController<T: Searchable>: UIViewController, UITableVi
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func loadView() {
+        view = searchablePickerView
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
-        setupSearchBar()
-        setupTableView()
+        searchablePickerView.tableView.delegate = self
+        searchablePickerView.tableView.dataSource = self
+        searchablePickerView.searchBar.delegate = self
         setupNavigationBar()
-    }
-
-    private func setupSearchBar() {
-        searchBar.delegate = self
-        searchBar.placeholder = "Search"
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(searchBar)
-
-        NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-    }
-
-    private func setupTableView() {
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
-
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
     }
 
     private func setupNavigationBar() {
@@ -107,6 +82,6 @@ class SearchablePickerViewController<T: Searchable>: UIViewController, UITableVi
         } else {
             filteredOptions = allOptions.filter { $0.name.lowercased().contains(searchText.lowercased()) }
         }
-        tableView.reloadData()
+        searchablePickerView.tableView.reloadData()
     }
 }
