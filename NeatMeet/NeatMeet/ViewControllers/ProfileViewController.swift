@@ -21,6 +21,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     
     
+    
     override func loadView() {
         view=profileScreen
     }
@@ -32,12 +33,28 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         profileScreen.editButton.menu = getMenuImagePicker()
         displayAllEvents()
         displayUserDetails()
+        profileScreen.buttonSave.addTarget(self, action: #selector(onSaveButtonTapped), for: .touchUpInside)
        
         
         profileScreen.eventTableView.delegate = self
         profileScreen.eventTableView.dataSource = self
         profileScreen.eventTableView.separatorStyle = .none
         
+    }
+    
+    @objc func onSaveButtonTapped(){
+        if let textFieldEmail = profileScreen.textFieldEmail.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+        let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines){
+            if textFieldEmail.isEmpty {
+                showAlert(title: "Email cannot be empty!", message: "Please enter an email.")
+                return        }
+            if textFieldName.isEmpty {
+                showAlert(title: "Name cannot be empty!", message: "Please enter a name.")
+                return
+            }
+        }
+        
+       
     }
     
     @objc func displayAllEvents() {
@@ -52,7 +69,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
            }
        }
     
-    
+    func showAlert(title: String, message: String) {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        }
     
     func getAllEvents() async {
             do {
@@ -60,7 +81,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 let snapshot = try await db.collection("events")
                     .whereField("publishedBy", isEqualTo: loggedInUser.email)
                     .getDocuments()
-                print(loggedInUser.email)
                 for document in snapshot.documents {
                     let data = document.data()
                        if let name = data["name"] as? String,
@@ -100,8 +120,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
 
     
     func setUpProfileData() async{
-//        profileScreen.textFieldName.text = "User 1"
-//        profileScreen.textFieldEmail.text = "user1@gmail.com"
         do {
                if loggedInUser.email.isEmpty {
                    print("Logged-in user email is empty.")
