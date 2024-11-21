@@ -8,5 +8,6 @@ target 'NeatMeet' do
   # Pods for NeatMeet
   pod 'FirebaseStorageUI'
   pod 'SDWebImage'
+  pod 'Alamofire'
 
 end
