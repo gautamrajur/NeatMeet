@@ -33,7 +33,7 @@ extension RegisterViewController {
                                 setName, storeUserToFireStore
                             )
 
-                            let viewController = ViewController()
+                            let viewController = LandingViewController()
                             navigationController?.setViewControllers([viewController], animated: true)
                             self.setLoading(false)
                             self.notificationCenter.post(

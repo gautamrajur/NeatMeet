@@ -174,7 +174,7 @@ class RegisterView: UIView {
             nameText.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
             nameText.heightAnchor.constraint(equalToConstant: 44),
                     
-            emailText.topAnchor.constraint(equalTo: nameText.bottomAnchor, constant: 40),
+            emailText.topAnchor.constraint(equalTo: nameText.bottomAnchor, constant: 16),
             emailText.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
             emailText.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
             emailText.heightAnchor.constraint(equalToConstant: 44),
