@@ -28,7 +28,7 @@ extension RegisterViewController {
                             async let setName: Void =
                                 setNameOfTheUserInFirebaseAuth(name: name)
                             async let storeUserToFireStore: Void =
-                                saveUserToFirestore(name: name, email: email)
+                            saveUserToFirestore(name: name, email: email)
                             _ = await (
                                 setName, storeUserToFireStore
                             )
@@ -53,12 +53,14 @@ extension RegisterViewController {
 
     func saveUserToFirestore(name: String, email: String) async {
         let db = Firestore.firestore()
+        let userID = UUID().uuidString
         let userData: [String: Any] = [
+            "id": userID,
             "name": name,
             "email": email,
         ]
         do {
-            try await db.collection("users").document(email).setData(userData)
+            try await db.collection("users").document(userID).setData(userData)
             print("User saved successfully to Firestore")
         } catch {
             print("Error saving user to Firestore: \(error)")
