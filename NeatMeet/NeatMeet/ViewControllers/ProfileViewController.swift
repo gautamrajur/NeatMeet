@@ -13,14 +13,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
    
     let profileScreen = ProfileView()
-    var delegate:ViewController!
+    var delegate:ViewController!		
     var pickedImage:UIImage?
     var events: [Event] = []
-    var loggedInUser = User(email: "alex@gmail.com", name: "alex")
+    var loggedInUser = User(email: "bottle@gmail.com", name: "Bottle", id: UUID(uuidString: "6080F5FE-1D39-4416-B6F7-F490FB7A06B7") ?? UUID())
     let db = Firestore.firestore()
-    
-    
-    
     
     override func loadView() {
         view=profileScreen
@@ -43,6 +40,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     @objc func onSaveButtonTapped(){
+        let oldUserId = loggedInUser.id
         if let textFieldEmail = profileScreen.textFieldEmail.text?.trimmingCharacters(in: .whitespacesAndNewlines),
         let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines){
             if textFieldEmail.isEmpty {
@@ -52,9 +50,18 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 showAlert(title: "Name cannot be empty!", message: "Please enter a name.")
                 return
             }
-        }
         
-       
+            db.collection("users").document(oldUserId.uuidString).updateData([
+                        "email": textFieldEmail,
+                        "name": textFieldName
+                    ]) { error in
+                        if let error = error {
+                            self.showAlert(title: "Error", message: "Failed to update profile")
+                        } else {
+                            self.showAlert(title: "Success", message: "Profile updated successfully.")
+                        }
+                    }
+                }
     }
     
     @objc func displayAllEvents() {

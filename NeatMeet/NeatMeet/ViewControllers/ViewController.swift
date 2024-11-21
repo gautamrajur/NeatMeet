@@ -124,6 +124,8 @@ class ViewController: UIViewController {
             }
             displayedEvents = events
             landingView.eventTableView.reloadData()
+            print("Hi")
+            print(UUID())
 
         } catch {
             print("Error getting documents: \(error)")
