@@ -8,7 +8,7 @@
 import UIKit
 import SDWebImage
 
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension LandingViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int)
         -> Int

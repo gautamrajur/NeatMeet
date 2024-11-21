@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension ViewController: UISearchBarDelegate {
+extension LandingViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText == "" {
             displayedEvents = events

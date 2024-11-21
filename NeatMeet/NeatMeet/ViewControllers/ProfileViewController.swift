@@ -13,13 +13,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
    
     let profileScreen = ProfileView()
-    var delegate:ViewController!
+    var delegate:LandingViewController!
     var pickedImage:UIImage?
     var events: [Event] = []
-    var loggedInUser = User(email: "", name: "")
+    var loggedInUser = User(email: "", name: "", id: UUID(uuidString: "6080F5FE-1D39-4416-B6F7-F490FB7A06B7") ?? UUID())
     let db = Firestore.firestore()
-    
-    
     
     override func loadView() {
         view=profileScreen
@@ -32,12 +30,50 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         profileScreen.editButton.menu = getMenuImagePicker()
         displayAllEvents()
         displayUserDetails()
+        profileScreen.buttonSave.addTarget(self, action: #selector(onSaveButtonTapped), for: .touchUpInside)
        
         
         profileScreen.eventTableView.delegate = self
         profileScreen.eventTableView.dataSource = self
         profileScreen.eventTableView.separatorStyle = .none
         
+    }
+    
+    @objc func onSaveButtonTapped(){
+        let oldUserId = loggedInUser.id
+        if let textFieldEmail = profileScreen.textFieldEmail.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+           let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines){
+            if textFieldEmail.isEmpty {
+                showAlert(title: "Email cannot be empty!", message: "Please enter an email.")
+                return        }
+            if textFieldName.isEmpty {
+                showAlert(title: "Name cannot be empty!", message: "Please enter a name.")
+                return
+            }
+            
+            db.collection("users").document(oldUserId.uuidString).updateData([
+                "email": textFieldEmail,
+                "name": textFieldName
+            ]) { error in
+                if let error = error {
+                    self.showAlert(title: "Error", message: "Failed to update profile in Firestore: \(error.localizedDescription)")
+                    return
+                }
+               
+                if let currentUser = Auth.auth().currentUser {
+                    currentUser.updateEmail(to: textFieldEmail) { error in
+                        if let error = error {
+                            self.showAlert(title: "Error", message: "Failed to update email in Authentication: \(error.localizedDescription)")
+                        } else {
+                            self.showAlert(title: "Success", message: "Profile updated successfully.")
+                            self.loggedInUser.email = textFieldEmail
+                        }
+                    }
+                } else {
+                    self.showAlert(title: "Error", message: "No authenticated user found.")
+                }
+            }
+        }
     }
     
     @objc func displayAllEvents() {
@@ -52,7 +88,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
            }
        }
     
-    
+    func showAlert(title: String, message: String) {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        }
     
     func getAllEvents() async {
             do {
@@ -62,28 +102,27 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     .getDocuments()
                 for document in snapshot.documents {
                     let data = document.data()
-                    if let name = data["name"] as? String,
-                       let likesCount = ["likesCount"] as? Int,
-                       let datePublished = ["datePublished"] as? Date,
-                       let address = data["location"] as? String,
+                       if let name = data["name"] as? String,
+                       let likesCount = data["likesCount"] as? Int,
+                       let datePublished = data["datePublished"] as? Timestamp,
+                       let address = data["address"] as? String,
                        let city = data["city"] as? String,
                        let state = data["state"] as? String,
-                       let imageUrl = data["imageUrls"] as? String,
-                       let image = data["image"] as? UIImage,
+                       let imageUrl = data["imageUrl"] as? String,
                        let publishedBy = data["publishedBy"] as? String,
-                       let eventDate = data["eventDate"] as? Date
+                          let eventDate = data["eventDate"] as? Timestamp
                     {
                         let event = Event(
                             id: document.documentID,
                             name: name,
                             likesCount: likesCount,
-                            datePublished: datePublished,
+                            datePublished: datePublished.dateValue(),
                             publishedBy: publishedBy,
                             address: address,
                             city: city,
                             state: state,
                             imageUrl: imageUrl,
-                            eventDate: eventDate
+                            eventDate: eventDate.dateValue()
                         )
                         events.append(event)
                         events.sort { $0.eventDate > $1.eventDate }
@@ -100,8 +139,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
 
     
     func setUpProfileData() async{
-//        profileScreen.textFieldName.text = "User 1"
-//        profileScreen.textFieldEmail.text = "user1@gmail.com"
         do {
                if loggedInUser.email.isEmpty {
                    print("Logged-in user email is empty.")
@@ -220,6 +257,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         cell.eventLocationLabel?.text = event.address
         cell.eventDateTimeLabel?.text = event.eventDate.description
         cell.eventLikeLabel?.text = (String)(event.likesCount)
+        if let imageUrl = URL(string: event.imageUrl) {
+            cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_placeholder"))
+        }
         return cell
     }
 

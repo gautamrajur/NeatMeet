@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class LoginViewController: UIViewController {
 
     let loginView = LoginView()
     let notificationCenter = NotificationCenter.default
+    var onLoginSuccess: (() -> Void)?
     
     override func loadView() {
         view = loginView
@@ -19,6 +21,7 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "NeatMeet"
+        self.navigationItem.hidesBackButton = true
         
         self.view.backgroundColor = .white
         
@@ -36,29 +39,57 @@ class LoginViewController: UIViewController {
     
     @objc func registerButtonTapped() {
         let registerVC = RegisterViewController()
-        registerVC.modalPresentationStyle = .fullScreen
-        present(registerVC, animated: true)
+        navigationController?.pushViewController(registerVC, animated: true)
     }
     
     @objc func loginButtonTapped() {
-//        if let emailText = loginView.emailText.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-//           let passwordText = loginView.passwordText.text?.trimmingCharacters(in: .whitespacesAndNewlines) {
-//            
-//            if !isValidEmail(emailText) {
-//                showAlert(title: "Invalid Email!", message: "Please enter a valid email address.")
-//                return
-//            }
-//            
-//            if passwordText.isEmpty {
-//                showAlert(title: "Password cannot be empty!", message: "Please enter password.")
-//                return
-//            }
+        if let emailText = loginView.emailText.text?.trimmingCharacters(
+                in: .whitespacesAndNewlines),
+                let passwordText = loginView.passwordText.text?.trimmingCharacters(
+                    in: .whitespacesAndNewlines)
+            {
+                if !isValidEmail(emailText) {
+                    showAlert(
+                        title: "Invalid Email!",
+                        message: "Please enter a valid email address.")
+                    return
+                }
+                if passwordText.isEmpty {
+                    showAlert(
+                        title: "Password cannot be empty!",
+                        message: "Please enter password.")
+                    return
+                }
+                setLoading(true)
+                self.signInToFirebase(email: emailText, password: passwordText)
+            }
             
-     //       setLoading(true)
-        
-        notificationCenter.post(name: .loggedIn, object: nil)
-        dismiss(animated: true)
-            
+    }
+    
+    func signInToFirebase(email: String, password: String) {
+        Auth.auth().signIn(
+            withEmail: email, password: password,
+            completion: { (result, error) in
+                if error == nil {
+                    print("login successful")
+                    self.setLoading(false)
+                    self.notificationCenter.post(name: .loggedIn, object: nil)
+                    self.onLoginSuccess?()
+                    let viewController = LandingViewController()
+                    self.navigationController?.setViewControllers([viewController], animated: true)
+                } else {
+                    self.setLoading(false)
+                    print("Error occured: \(String(describing: error))")
+                    self.showAlert(
+                        title: "Error!", message: "Incorrect credentials")
+                }
+            })
+        }
+
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
     }
     
     func setLoading(_ loading: Bool) {
@@ -72,4 +103,9 @@ class LoginViewController: UIViewController {
         }
     }
 
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }
