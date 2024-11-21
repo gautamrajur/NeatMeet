@@ -14,32 +14,40 @@ class LandingViewController: UIViewController {
 
     let landingView = LandingView()
     var navController: UINavigationController?
-    var selectedState: String = "Massachusetts"
+    var selectedState: String = "MA"
     var selectedCity: String = "Boston"
     var displayedEvents: [Event] = []
     var events: [Event] = []
     let db = Firestore.firestore()
+    let locationAPI = LocationAPI()
 
-    let states = ["Massachusetts", "California", "New York"]
+    let states = ["MA", "California", "New York"]
     let citiesByState = [
-        "Massachusetts": ["Boston", "Cambridge", "Springfield"],
+        "MA": ["Boston", "Cambridge", "Springfield"],
         "California": ["Los Angeles", "San Francisco", "San Diego"],
         "New York": ["New York City", "Buffalo", "Rochester"],
     ]
 
+    var citiesList: [City] = []
+    var statesList: [State] = []
+
     override func loadView() {
         view = landingView
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.hidesBackButton = true
 
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
-        Task { await getAllEvents() }
+        Task {
+            statesList = await locationAPI.getAllStates()
+            await getAllEvents()
+        }
     }
-    
+
     private func configureUIElements() {
         landingView.profileImage.menu = getProfileImageMenu()
         landingView.eventTableView.delegate = self
@@ -82,6 +90,8 @@ class LandingViewController: UIViewController {
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let docRef = db.collection("events")
+            .whereField("state", isEqualTo: selectedState)
+            .whereField("city", isEqualTo: selectedCity)
             .whereField("eventDate", isGreaterThanOrEqualTo: currentDate)
             .order(by: "eventDate", descending: false)
         do {
@@ -156,25 +166,27 @@ class LandingViewController: UIViewController {
 
     func logout() {
         let logoutAlert = UIAlertController(
-                title: "Logging out!", message: "Are you sure want to log out?",
-                preferredStyle: .actionSheet)
-            logoutAlert.addAction(
-                UIAlertAction(
-                    title: "Yes, log out!", style: .default,
-                        handler: { (_) in
-                            do {
-                                try Auth.auth().signOut()
-                                print("current user: ", Auth.auth().currentUser ?? "no user")
-                                print("Logged out, proceeding to call login screen")
-                                self.showLoginScreen()
-                            } catch {
-                                print("Error occured!")
-                            }
-                    })
-            )
-            logoutAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            title: "Logging out!", message: "Are you sure want to log out?",
+            preferredStyle: .actionSheet)
+        logoutAlert.addAction(
+            UIAlertAction(
+                title: "Yes, log out!", style: .default,
+                handler: { (_) in
+                    do {
+                        try Auth.auth().signOut()
+                        print(
+                            "current user: ",
+                            Auth.auth().currentUser ?? "no user")
+                        print("Logged out, proceeding to call login screen")
+                        self.showLoginScreen()
+                    } catch {
+                        print("Error occured!")
+                    }
+                })
+        )
+        logoutAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 
-            self.present(logoutAlert, animated: true)
+        self.present(logoutAlert, animated: true)
     }
 
     @objc private func handleStateSelected(notification: Notification) {
@@ -240,6 +252,5 @@ class LandingViewController: UIViewController {
             present(navController, animated: true)
         }
     }
-    
 
 }

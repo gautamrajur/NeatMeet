@@ -93,7 +93,6 @@ class LandingView: UIView {
         eventTableView.register(
             EventTableViewCell.self, forCellReuseIdentifier: "events")
         eventTableView.translatesAutoresizingMaskIntoConstraints = false
-        eventTableView.backgroundColor = .gray
         addSubview(eventTableView)
     }
 
