@@ -165,7 +165,7 @@ class LoginView: UIView {
             registerButton.bottomAnchor.constraint(equalTo: contentWrapper.bottomAnchor, constant: -20),
             
             activityIndicator.centerXAnchor.constraint(equalTo: loginButton.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor, constant: 30),
             
             bottomImageView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             bottomImageView.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
