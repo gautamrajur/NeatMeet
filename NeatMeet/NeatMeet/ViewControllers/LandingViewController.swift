@@ -14,18 +14,14 @@ class LandingViewController: UIViewController {
 
     let landingView = LandingView()
     var navController: UINavigationController?
-    var selectedState: String = "Massachusetts"
-    var selectedCity: String = "Boston"
+    var selectedState: State = State(name: "", isoCode: "")
+    var selectedCity: City = City(name: "", stateCode: "")
     var displayedEvents: [Event] = []
     var events: [Event] = []
     let db = Firestore.firestore()
-
-    let states = ["Massachusetts", "California", "New York"]
-    let citiesByState = [
-        "Massachusetts": ["Boston", "Cambridge", "Springfield"],
-        "California": ["Los Angeles", "San Francisco", "San Diego"],
-        "New York": ["New York City", "Buffalo", "Rochester"],
-    ]
+    let locationAPI = LocationAPI()
+    var citiesList: [City] = []
+    var statesList: [State] = []
 
     override func loadView() {
         view = landingView
@@ -33,13 +29,31 @@ class LandingViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.hidesBackButton = true
 
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
-        Task { await getAllEvents() }
+        Task {
+            await initStateAndCity()
+        }
     }
     
+    private func initStateAndCity() async {
+        statesList = await locationAPI.getAllStates()
+        if statesList.count > 0 {
+            selectedState = statesList.first!
+            landingView.stateButton.setTitle(
+                selectedState.name, for: .normal)
+            citiesList = await locationAPI.getAllCities(
+                stateCode: selectedState.isoCode)
+            selectedCity = citiesList.first!
+            landingView.cityButton.setTitle(
+                selectedCity.name, for: .normal)
+            await getAllEvents()
+        }
+    }
+
     private func configureUIElements() {
         landingView.profileImage.menu = getProfileImageMenu()
         landingView.eventTableView.delegate = self
@@ -82,6 +96,8 @@ class LandingViewController: UIViewController {
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let docRef = db.collection("events")
+            .whereField("state", isEqualTo: selectedState.name)
+            .whereField("city", isEqualTo: selectedCity.name)
             .whereField("eventDate", isGreaterThanOrEqualTo: currentDate)
             .order(by: "eventDate", descending: false)
         do {
@@ -156,57 +172,63 @@ class LandingViewController: UIViewController {
 
     func logout() {
         let logoutAlert = UIAlertController(
-                title: "Logging out!", message: "Are you sure want to log out?",
-                preferredStyle: .actionSheet)
-            logoutAlert.addAction(
-                UIAlertAction(
-                    title: "Yes, log out!", style: .default,
-                        handler: { (_) in
-                            do {
-                                try Auth.auth().signOut()
-                                print("current user: ", Auth.auth().currentUser ?? "no user")
-                                print("Logged out, proceeding to call login screen")
-                                self.showLoginScreen()
-                            } catch {
-                                print("Error occured!")
-                            }
-                    })
-            )
-            logoutAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            title: "Logging out!", message: "Are you sure want to log out?",
+            preferredStyle: .actionSheet)
+        logoutAlert.addAction(
+            UIAlertAction(
+                title: "Yes, log out!", style: .default,
+                handler: { (_) in
+                    do {
+                        try Auth.auth().signOut()
+                        print(
+                            "current user: ",
+                            Auth.auth().currentUser ?? "no user")
+                        print("Logged out, proceeding to call login screen")
+                        self.showLoginScreen()
+                    } catch {
+                        print("Error occured!")
+                    }
+                })
+        )
+        logoutAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
 
-            self.present(logoutAlert, animated: true)
+        self.present(logoutAlert, animated: true)
     }
 
     @objc private func handleStateSelected(notification: Notification) {
-        let state = (notification.object as! String)
-        if state != selectedState {
+        let state = (notification.object as! State)
+        if state.isoCode != selectedState.isoCode {
             selectedState = state
-            selectedCity = citiesByState[selectedState]?.first ?? ""
-            landingView.stateButton.setTitle(selectedState, for: .normal)
-            landingView.cityButton.setTitle(selectedCity, for: .normal)
-            filterEvents()
+            landingView.stateButton.setTitle(selectedState.name, for: .normal)
+            Task {
+                citiesList = await locationAPI.getAllCities(
+                    stateCode: state.isoCode)
+                if !citiesList.isEmpty {
+                    selectedCity = citiesList.first!
+                    landingView.cityButton.setTitle(
+                        selectedCity.name, for: .normal)
+                    await getAllEvents()
+                }
+            }
         }
     }
 
     @objc private func handleCitySelected(notification: Notification) {
-        let city = (notification.object as! String)
+        let city = (notification.object as! City)
         selectedCity = city
-        landingView.cityButton.setTitle(selectedCity, for: .normal)
-        filterEvents()
+        landingView.cityButton.setTitle(selectedCity.name, for: .normal)
+        Task {
+            await getAllEvents()
+        }
     }
 
-    private func filterEvents() {
-
-    }
-
-    func setUpBottomPickerSheet(
-        options: [String], selectedOption: String?,
+    func setUpBottomSearchSheet<T: Searchable>(
+        options: [T], selectedOption: T?,
         notificationName: NSNotification.Name
     ) {
-        let finalSelectedOption = selectedOption ?? options.first ?? ""
-
-        let pickerVC = LandingPagePickerViewController(
-            options: options, selectedOption: finalSelectedOption,
+        let pickerVC = SearchablePickerViewController<T>(
+            options: options,
+            selectedOption: selectedOption,
             notificationName: notificationName
         )
 
@@ -215,31 +237,24 @@ class LandingViewController: UIViewController {
 
         if let bottomPickerSheet = navController?.sheetPresentationController {
             bottomPickerSheet.detents = [.medium()]
-
             bottomPickerSheet.prefersGrabberVisible = false
             navController?.isModalInPresentation = true
+        }
+
+        if let navController = navController {
+            present(navController, animated: true)
         }
     }
 
     @objc func stateButtonTapped() {
-        setUpBottomPickerSheet(
-            options: states, selectedOption: selectedState,
+        setUpBottomSearchSheet(
+            options: statesList, selectedOption: selectedState,
             notificationName: .selectState)
-        if let navController = navController {
-            present(navController, animated: true)
-        }
     }
 
     @objc func cityButtonTapped() {
-        let cities =
-            citiesByState[selectedState] ?? citiesByState["Massachusetts"] ?? []
-        setUpBottomPickerSheet(
-            options: cities, selectedOption: selectedCity,
+        setUpBottomSearchSheet(
+            options: citiesList, selectedOption: selectedCity,
             notificationName: .selectCity)
-        if let navController = navController {
-            present(navController, animated: true)
-        }
     }
-    
-
 }
