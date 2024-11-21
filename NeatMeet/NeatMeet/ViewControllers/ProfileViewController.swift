@@ -16,7 +16,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var delegate:ViewController!
     var pickedImage:UIImage?
     var events: [Event] = []
-    var loggedInUser = User(email: "", name: "")
+    var loggedInUser = User(email: "alex@gmail.com", name: "alex")
     let db = Firestore.firestore()
     
     
@@ -60,30 +60,30 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 let snapshot = try await db.collection("events")
                     .whereField("publishedBy", isEqualTo: loggedInUser.email)
                     .getDocuments()
+                print(loggedInUser.email)
                 for document in snapshot.documents {
                     let data = document.data()
-                    if let name = data["name"] as? String,
-                       let likesCount = ["likesCount"] as? Int,
-                       let datePublished = ["datePublished"] as? Date,
-                       let address = data["location"] as? String,
+                       if let name = data["name"] as? String,
+                       let likesCount = data["likesCount"] as? Int,
+                       let datePublished = data["datePublished"] as? Timestamp,
+                       let address = data["address"] as? String,
                        let city = data["city"] as? String,
                        let state = data["state"] as? String,
-                       let imageUrl = data["imageUrls"] as? String,
-                       let image = data["image"] as? UIImage,
+                       let imageUrl = data["imageUrl"] as? String,
                        let publishedBy = data["publishedBy"] as? String,
-                       let eventDate = data["eventDate"] as? Date
+                          let eventDate = data["eventDate"] as? Timestamp
                     {
                         let event = Event(
                             id: document.documentID,
                             name: name,
                             likesCount: likesCount,
-                            datePublished: datePublished,
+                            datePublished: datePublished.dateValue(),
                             publishedBy: publishedBy,
                             address: address,
                             city: city,
                             state: state,
                             imageUrl: imageUrl,
-                            eventDate: eventDate
+                            eventDate: eventDate.dateValue()
                         )
                         events.append(event)
                         events.sort { $0.eventDate > $1.eventDate }
@@ -220,6 +220,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         cell.eventLocationLabel?.text = event.address
         cell.eventDateTimeLabel?.text = event.eventDate.description
         cell.eventLikeLabel?.text = (String)(event.likesCount)
+        if let imageUrl = URL(string: event.imageUrl) {
+            cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_placeholder"))
+        }
         return cell
     }
 
