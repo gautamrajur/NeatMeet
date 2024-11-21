@@ -6,9 +6,9 @@
 //
 import FirebaseAuth
 struct User {
-    let id: UUID
-    let email: String
-    let name: String
+    var id: UUID
+    var email: String
+    var name: String
     
     init(email: String, name: String, id: UUID) {
           self.id = id

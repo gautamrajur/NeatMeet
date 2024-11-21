@@ -42,7 +42,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     @objc func onSaveButtonTapped(){
         let oldUserId = loggedInUser.id
         if let textFieldEmail = profileScreen.textFieldEmail.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-        let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines){
+           let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines){
             if textFieldEmail.isEmpty {
                 showAlert(title: "Email cannot be empty!", message: "Please enter an email.")
                 return        }
@@ -50,18 +50,30 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 showAlert(title: "Name cannot be empty!", message: "Please enter a name.")
                 return
             }
-        
+            
             db.collection("users").document(oldUserId.uuidString).updateData([
-                        "email": textFieldEmail,
-                        "name": textFieldName
-                    ]) { error in
+                "email": textFieldEmail,
+                "name": textFieldName
+            ]) { error in
+                if let error = error {
+                    self.showAlert(title: "Error", message: "Failed to update profile in Firestore: \(error.localizedDescription)")
+                    return
+                }
+               
+                if let currentUser = Auth.auth().currentUser {
+                    currentUser.updateEmail(to: textFieldEmail) { error in
                         if let error = error {
-                            self.showAlert(title: "Error", message: "Failed to update profile")
+                            self.showAlert(title: "Error", message: "Failed to update email in Authentication: \(error.localizedDescription)")
                         } else {
                             self.showAlert(title: "Success", message: "Profile updated successfully.")
+                            self.loggedInUser.email = textFieldEmail
                         }
                     }
+                } else {
+                    self.showAlert(title: "Error", message: "No authenticated user found.")
                 }
+            }
+        }
     }
     
     @objc func displayAllEvents() {
