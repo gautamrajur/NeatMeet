@@ -89,8 +89,8 @@ class ViewController: UIViewController {
         let calendar = Calendar.current
         let currentDate = calendar.startOfDay(for: Date())
         let docRef = db.collection("events")
-            .whereField("datePublished", isGreaterThanOrEqualTo: currentDate)
-            .order(by: "datePublished", descending: false)
+            .whereField("eventDate", isGreaterThanOrEqualTo: currentDate)
+            .order(by: "eventDate", descending: false)
         do {
             let snapshot = try await docRef.getDocuments()
             events.removeAll()
