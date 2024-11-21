@@ -5,8 +5,7 @@
 //  Created by Damyant Jain on 11/21/24.
 //
 
-public struct City : Codable {
+public struct City : Codable, Searchable {
     var name: String
-    var countryCode: String
     var stateCode: String
 }

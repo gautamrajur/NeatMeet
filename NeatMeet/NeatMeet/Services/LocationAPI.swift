@@ -10,12 +10,12 @@ import Foundation
 
 public class LocationAPI {
 
-    func getAllCities(countryCode: String, stateCode: String) async -> [City] {
+    func getAllCities(stateCode: String) async -> [City] {
         var citiesList: [City] = []
         let url =
             "https://country-state-city-search-rest-api.p.rapidapi.com/cities-by-countrycode-and-statecode"
         let parameters: [String: String] = [
-            "countrycode": countryCode,
+            "countrycode": "US",
             "statecode": stateCode,
         ]
         let headers: HTTPHeaders = [

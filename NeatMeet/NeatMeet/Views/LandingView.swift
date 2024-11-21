@@ -60,7 +60,6 @@ class LandingView: UIView {
 
     private func setUpStatePicker() {
         stateButton = UIButton(type: .system)
-        stateButton.setTitle("Massachusetts", for: .normal)
         stateButton.tintColor = .black
         stateButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stateButton)
@@ -75,7 +74,6 @@ class LandingView: UIView {
 
     private func setUpCityPicker() {
         cityButton = UIButton(type: .system)
-        cityButton.setTitle("Boston", for: .normal)
         cityButton.tintColor = .black
         cityButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(cityButton)
