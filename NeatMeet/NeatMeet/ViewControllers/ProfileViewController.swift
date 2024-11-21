@@ -13,7 +13,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
    
     let profileScreen = ProfileView()
-    var delegate:ViewController!
+    var delegate:LandingViewController!
     var pickedImage:UIImage?
     var events: [Event] = []
     var loggedInUser = User(email: "alex@gmail.com", name: "alex")
