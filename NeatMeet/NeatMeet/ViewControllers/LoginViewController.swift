@@ -13,6 +13,8 @@ class LoginViewController: UIViewController {
     let loginView = LoginView()
     let notificationCenter = NotificationCenter.default
     var onLoginSuccess: (() -> Void)?
+    let defaults = UserDefaults.standard
+
     
     override func loadView() {
         view = loginView
@@ -75,6 +77,15 @@ class LoginViewController: UIViewController {
                     self.setLoading(false)
                     self.notificationCenter.post(name: .loggedIn, object: nil)
                     self.onLoginSuccess?()
+                   
+                    if let currentUser = Auth.auth().currentUser {
+                        UserManager.shared.loggedInUser = User(
+                            email: currentUser.email ?? "",
+                            name: currentUser.displayName ?? "Unknown",
+                            id: currentUser.uid,
+                            imageUrl: ""
+                        )
+                    }
                     let viewController = LandingViewController()
                     self.navigationController?.setViewControllers([viewController], animated: true)
                 } else {
@@ -85,6 +96,10 @@ class LoginViewController: UIViewController {
                 }
             })
         }
+    
+    
+    
+    
 
     func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"

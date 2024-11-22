@@ -8,6 +8,7 @@ import UIKit
 import PhotosUI
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
@@ -16,8 +17,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var delegate:LandingViewController!
     var pickedImage:UIImage?
     var events: [Event] = []
-    var loggedInUser = User(email: "", name: "", id: UUID(uuidString: "E13F8CDD-44C1-49CC-864B-F11C283ACD91") ?? UUID())
     let db = Firestore.firestore()
+    let storage = Storage.storage()
+
     
     override func loadView() {
         view=profileScreen
@@ -31,47 +33,44 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         displayAllEvents()
         displayUserDetails()
         profileScreen.buttonSave.addTarget(self, action: #selector(onSaveButtonTapped), for: .touchUpInside)
-       
-        
         profileScreen.eventTableView.delegate = self
         profileScreen.eventTableView.dataSource = self
         profileScreen.eventTableView.separatorStyle = .none
         
     }
     
-    @objc func onSaveButtonTapped(){
-        let oldUserId = loggedInUser.id
-        if let textFieldEmail = profileScreen.textFieldEmail.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-           let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines){
-            if textFieldEmail.isEmpty {
-                showAlert(title: "Email cannot be empty!", message: "Please enter an email.")
-                return        }
-            if textFieldName.isEmpty {
-                showAlert(title: "Name cannot be empty!", message: "Please enter a name.")
-                return
-            }
-            
-            db.collection("users").document(oldUserId.uuidString).updateData([
-                "email": textFieldEmail,
-                "name": textFieldName
-            ]) { error in
-                if let error = error {
-                    self.showAlert(title: "Error", message: "Failed to update profile in Firestore: \(error.localizedDescription)")
-                    return
+    @objc func onSaveButtonTapped() {
+        guard let textFieldEmail = profileScreen.textFieldEmail.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+              let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            showAlert(title: "Error", message: "Please fill out all fields.")
+            return
+        }
+
+        if textFieldEmail.isEmpty || textFieldName.isEmpty {
+            showAlert(title: "Error", message: "Name and email cannot be empty!")
+            return
+        }
+
+        Task {
+            do {
+                var updatedImageUrl = UserManager.shared.loggedInUser?.imageUrl ?? ""
+                if let userIdString = UserManager.shared.loggedInUser?.id {
+                    try await db.collection("users").document(userIdString).updateData([
+                        "email": textFieldEmail,
+                        "name": textFieldName,
+                        "imageUrl": updatedImageUrl
+                    ])
+                    
+                    UserManager.shared.loggedInUser?.email = textFieldEmail
+                    UserManager.shared.loggedInUser?.name = textFieldName
+                    UserManager.shared.loggedInUser?.imageUrl = updatedImageUrl
+
+                    showAlert(title: "Success", message: "Profile updated successfully.")
+                } else {
+                    showAlert(title: "Error", message: "No logged-in user ID found.")
                 }
-               
-//                if let currentUser = Auth.auth().currentUser {
-//                    currentUser.updateEmail(to: textFieldEmail) { error in
-//                        if let error = error {
-//                            self.showAlert(title: "Error", message: "Failed to update email in Authentication: \(error.localizedDescription)")
-//                        } else {
-//                            self.showAlert(title: "Success", message: "Profile updated successfully.")
-//                            self.loggedInUser.email = textFieldEmail
-//                        }
-//                    }
-//                } else {
-//                    self.showAlert(title: "Error", message: "No authenticated user found.")
-//                }
+            } catch {
+                showAlert(title: "Error", message: "Failed to update profile in Firestore: \(error.localizedDescription)")
             }
         }
     }
@@ -98,38 +97,39 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             do {
                 
                 events.removeAll()
-                let userIdString = loggedInUser.id.uuidString
-                let snapshot = try await db.collection("events")
-                    .whereField("publishedBy", isEqualTo: userIdString)
-                    .getDocuments()
-                for document in snapshot.documents {
-                    let data = document.data()
-                       if let name = data["name"] as? String,
-                       let likesCount = data["likesCount"] as? Int,
-                       let datePublished = data["datePublished"] as? Timestamp,
-                       let address = data["address"] as? String,
-                       let city = data["city"] as? String,
-                       let state = data["state"] as? String,
-                       let imageUrl = data["imageUrl"] as? String,
-                       let publishedByString = data["publishedBy"] as? String,
-                       let publishedBy = UUID(uuidString: publishedByString),
-                       let eventDate = data["eventDate"] as? Timestamp
-                    {
-                        let event = Event(
-                            id: document.documentID,
-                            name: name,
-                            likesCount: likesCount,
-                            datePublished: datePublished.dateValue(),
-                            publishedBy: publishedBy,
-                            address: address,
-                            city: city,
-                            state: state,
-                            imageUrl: imageUrl,
-                            eventDate: eventDate.dateValue()
-                        )
-                        events.append(event)
-                        events.sort { $0.eventDate > $1.eventDate }
-                        self.profileScreen.eventTableView.reloadData()
+                if let userIdString = UserManager.shared.loggedInUser?.id{
+                    let snapshot = try await db.collection("events")
+                        .whereField("publishedBy", isEqualTo: userIdString)
+                        .getDocuments()
+                    for document in snapshot.documents {
+                        let data = document.data()
+                        if let name = data["name"] as? String,
+                           let likesCount = data["likesCount"] as? Int,
+                           let datePublished = data["datePublished"] as? Timestamp,
+                           let address = data["address"] as? String,
+                           let city = data["city"] as? String,
+                           let state = data["state"] as? String,
+                           let imageUrl = data["imageUrl"] as? String,
+                           let publishedByString = data["publishedBy"] as? String,
+                           let publishedBy = UUID(uuidString: publishedByString),
+                           let eventDate = data["eventDate"] as? Timestamp
+                        {
+                            let event = Event(
+                                id: document.documentID,
+                                name: name,
+                                likesCount: likesCount,
+                                datePublished: datePublished.dateValue(),
+                                publishedBy: publishedBy,
+                                address: address,
+                                city: city,
+                                state: state,
+                                imageUrl: imageUrl,
+                                eventDate: eventDate.dateValue()
+                            )
+                            events.append(event)
+                            events.sort { $0.eventDate > $1.eventDate }
+                            self.profileScreen.eventTableView.reloadData()
+                        }
                     }
                 }
 
@@ -141,37 +141,53 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
 
     
-    func setUpProfileData() async{
+    func setUpProfileData() async {	
         do {
-               
-               if loggedInUser.email.isEmpty, let currentUser = Auth.auth().currentUser {
-                    loggedInUser.email = currentUser.email ?? ""
-                }
+            if UserManager.shared.loggedInUser == nil, let currentUser = Auth.auth().currentUser {
+                UserManager.shared.loggedInUser = User(
+                    email: currentUser.email ?? "",
+                    name: currentUser.displayName ?? "Unknown",
+                    id: currentUser.uid,
+                    imageUrl: ""
+                )
+            }
             
-               let userIdString = loggedInUser.id.uuidString
-               let snapshot = try await db.collection("users")
-                       .whereField("id", isEqualTo: userIdString)
-                       .getDocuments()
-
-               if snapshot.documents.isEmpty {
-                   print("No user found with the given email.")
-                   return
-               }
-
-               if let document = snapshot.documents.first {
-                   let data = document.data()
-                   if let name = data["name"] as? String,
-                      let email = data["email"] as? String {
-                       profileScreen.textFieldName.text = name
-                       profileScreen.textFieldEmail.text = email
-                   } else {
-                       print("Invalid data format.")
-                   }
-               }
-           } catch {
-               print("Error fetching user data: \(error)")
-           }
-        
+            guard let userIdString = UserManager.shared.loggedInUser?.id else {
+                print("No logged-in user ID found.")
+                return
+            }
+            
+            let snapshot = try await db.collection("users").document(userIdString).getDocument()
+            
+            guard let data = snapshot.data() else {
+                print("No user found with the given ID.")
+                return
+            }
+            
+            if let name = data["name"] as? String,
+               let email = data["email"] as? String,
+               let imageUrl = data["imageUrl"] as? String {
+                
+                profileScreen.textFieldName.text = name
+                profileScreen.textFieldEmail.text = email
+                
+                if let imageUrlURL = URL(string: imageUrl) {
+                    profileScreen.imageContacts.sd_setImage(
+                        with: imageUrlURL,
+                        placeholderImage: UIImage(systemName: "person.fill")
+                    )
+                }
+                
+                UserManager.shared.loggedInUser?.name = name
+                UserManager.shared.loggedInUser?.email = email
+                UserManager.shared.loggedInUser?.imageUrl = imageUrl
+                
+            } else {
+                print("Invalid user data format.")
+            }
+        } catch {
+            print("Error fetching user data from Firestore: \(error.localizedDescription)")
+        }
     }
     
     func getMenuImagePicker() -> UIMenu{
