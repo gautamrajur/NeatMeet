@@ -16,7 +16,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var delegate:LandingViewController!
     var pickedImage:UIImage?
     var events: [Event] = []
-    var loggedInUser = User(email: "", name: "", id: UUID(uuidString: "6080F5FE-1D39-4416-B6F7-F490FB7A06B7") ?? UUID())
+    var loggedInUser = User(email: "", name: "", id: UUID(uuidString: "E13F8CDD-44C1-49CC-864B-F11C283ACD91") ?? UUID())
     let db = Firestore.firestore()
     
     override func loadView() {
@@ -60,18 +60,18 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     return
                 }
                
-                if let currentUser = Auth.auth().currentUser {
-                    currentUser.updateEmail(to: textFieldEmail) { error in
-                        if let error = error {
-                            self.showAlert(title: "Error", message: "Failed to update email in Authentication: \(error.localizedDescription)")
-                        } else {
-                            self.showAlert(title: "Success", message: "Profile updated successfully.")
-                            self.loggedInUser.email = textFieldEmail
-                        }
-                    }
-                } else {
-                    self.showAlert(title: "Error", message: "No authenticated user found.")
-                }
+//                if let currentUser = Auth.auth().currentUser {
+//                    currentUser.updateEmail(to: textFieldEmail) { error in
+//                        if let error = error {
+//                            self.showAlert(title: "Error", message: "Failed to update email in Authentication: \(error.localizedDescription)")
+//                        } else {
+//                            self.showAlert(title: "Success", message: "Profile updated successfully.")
+//                            self.loggedInUser.email = textFieldEmail
+//                        }
+//                    }
+//                } else {
+//                    self.showAlert(title: "Error", message: "No authenticated user found.")
+//                }
             }
         }
     }
@@ -96,9 +96,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func getAllEvents() async {
             do {
+                
                 events.removeAll()
+                let userIdString = loggedInUser.id.uuidString
                 let snapshot = try await db.collection("events")
-                    .whereField("publishedBy", isEqualTo: loggedInUser.email)
+                    .whereField("publishedBy", isEqualTo: userIdString)
                     .getDocuments()
                 for document in snapshot.documents {
                     let data = document.data()
@@ -109,8 +111,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                        let city = data["city"] as? String,
                        let state = data["state"] as? String,
                        let imageUrl = data["imageUrl"] as? String,
-                       let publishedBy = data["publishedBy"] as? String,
-                          let eventDate = data["eventDate"] as? Timestamp
+                       let publishedByString = data["publishedBy"] as? String,
+                       let publishedBy = UUID(uuidString: publishedByString),
+                       let eventDate = data["eventDate"] as? Timestamp
                     {
                         let event = Event(
                             id: document.documentID,
@@ -140,14 +143,15 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func setUpProfileData() async{
         do {
-               if loggedInUser.email.isEmpty {
-                   print("Logged-in user email is empty.")
-                   return
-               }
-
+               
+               if loggedInUser.email.isEmpty, let currentUser = Auth.auth().currentUser {
+                    loggedInUser.email = currentUser.email ?? ""
+                }
+            
+               let userIdString = loggedInUser.id.uuidString
                let snapshot = try await db.collection("users")
-                   .whereField("email", isEqualTo: loggedInUser.email)
-                   .getDocuments()
+                       .whereField("id", isEqualTo: userIdString)
+                       .getDocuments()
 
                if snapshot.documents.isEmpty {
                    print("No user found with the given email.")
