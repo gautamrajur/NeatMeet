@@ -50,6 +50,11 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             showAlert(title: "Error", message: "Name and email cannot be empty!")
             return
         }
+        
+        if !isValidEmail(textFieldEmail) {
+                showAlert(title: "Invalid Email!", message: "Please enter a valid email address.")
+                return
+            }
 
         Task {
             do {
@@ -73,6 +78,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 showAlert(title: "Error", message: "Failed to update profile in Firestore: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
     }
     
     @objc func displayAllEvents() {
@@ -142,20 +153,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func setUpProfileData() async {	
         do {
-            if UserManager.shared.loggedInUser == nil, let currentUser = Auth.auth().currentUser {
-                UserManager.shared.loggedInUser = User(
-                    email: currentUser.email ?? "",
-                    name: currentUser.displayName ?? "Unknown",
-                    id: currentUser.uid,
-                    imageUrl: ""
-                )
-            }
-            
             guard let userIdString = UserManager.shared.loggedInUser?.id else {
                 print("No logged-in user ID found.")
                 return
             }
-            
             let snapshot = try await db.collection("users").document(userIdString).getDocument()
             
             guard let data = snapshot.data() else {
