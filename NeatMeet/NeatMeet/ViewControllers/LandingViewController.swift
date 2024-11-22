@@ -34,8 +34,48 @@ class LandingViewController: UIViewController {
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
-        Task {
-            await initStateAndCity()
+        requestLocation()
+    }
+    
+    private func requestLocation() {
+        LocationManager.shared.getCurrentLocation { [weak self] result in
+            guard let self = self else { return }
+                
+            Task {
+                // Get all states first
+                self.statesList = await self.locationAPI.getAllStates()
+                    
+                if let (detectedStateCode, detectedCity) = result {
+                    // Find matching state in statesList using the ISO code
+                    if let matchingState = self.statesList.first(where: { $0.isoCode == detectedStateCode }) {
+                        self.selectedState = matchingState
+                        // Get cities for the detected state
+                        self.citiesList = await self.locationAPI.getAllCities(stateCode: matchingState.isoCode)
+                            
+                        // Find matching city
+                        if let matchingCity = self.citiesList.first(where: { $0.name.lowercased() == detectedCity.lowercased() }) {
+                            self.selectedCity = matchingCity
+                        } else {
+                            self.selectedCity = self.citiesList.first ?? City(name: "", stateCode: "")
+                        }
+                    } else {
+                        // Fallback to first state and city if no match found
+                        await self.initStateAndCity()
+                    }
+                } else {
+                    // Fallback to first state and city if location detection failed
+                    await self.initStateAndCity()
+                }
+                    
+                    // Update UI on main thread
+                DispatchQueue.main.async {
+                    self.landingView.stateButton.setTitle(self.selectedState.name, for: .normal)
+                    self.landingView.cityButton.setTitle(self.selectedCity.name, for: .normal)
+                }
+                    
+                // Fetch events for the selected location
+                await self.getAllEvents()
+            }
         }
     }
     
