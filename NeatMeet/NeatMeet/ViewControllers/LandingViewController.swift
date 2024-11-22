@@ -30,13 +30,18 @@ class LandingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
-
+        displayUserDetails()
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
         requestLocation()
     }
     
+    @objc func displayUserDetails() {
+        Task {
+            await setUpProfileData()
+        }
+    }
     private func requestLocation() {
         LocationManager.shared.getCurrentLocation { [weak self] result in
             guard let self = self else { return }
@@ -76,6 +81,47 @@ class LandingViewController: UIViewController {
                 // Fetch events for the selected location
                 await self.getAllEvents()
             }
+        }
+    }
+    
+    private func setUpProfileData() async {
+        do {
+            if UserManager.shared.loggedInUser == nil, let currentUser = Auth.auth().currentUser {
+                UserManager.shared.loggedInUser = User(
+                    email: currentUser.email ?? "",
+                    name: currentUser.displayName ?? "Unknown",
+                    id: currentUser.uid,
+                    imageUrl: ""
+                )
+            }
+            
+            guard let userIdString = UserManager.shared.loggedInUser?.id else {
+                print("No logged-in user ID found.")
+                return
+            }
+            
+            let snapshot = try await db.collection("users").document(userIdString).getDocument()
+            
+            guard let data = snapshot.data() else {
+                print("No user found with the given ID.")
+                return
+            }
+            
+            if let imageUrl = data["imageUrl"] as? String {
+                if let imageUrlURL = URL(string: imageUrl) {
+                    landingView.profileImage.sd_setImage(
+                        with: imageUrlURL,
+                        for: .normal,
+                        placeholderImage: UIImage(systemName: "person.fill")
+                    )
+                }
+                UserManager.shared.loggedInUser?.imageUrl = imageUrl
+                
+            } else {
+                print("Invalid user data format.")
+            }
+        } catch {
+            print("Error fetching user data from Firestore: \(error.localizedDescription)")
         }
     }
     
