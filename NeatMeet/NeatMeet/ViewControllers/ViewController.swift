@@ -13,13 +13,22 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
            super.viewDidLoad()
-           
-           if Auth.auth().currentUser == nil {
-               print("calling logging screen")
-               navigateToLoginScreen()
-           } else {
-               navigateToLandingScreen()
-           }
+        if let currentUser = Auth.auth().currentUser{
+            
+            if currentUser == nil {
+                print("calling logging screen")
+                navigateToLoginScreen()
+            } else {
+                
+                UserManager.shared.loggedInUser = User(
+                    email: currentUser.email ?? "",
+                    name: currentUser.displayName ?? "Unknown",
+                    id: currentUser.uid,
+                    imageUrl: ""
+                )
+                navigateToLandingScreen()
+            }
+        }
        }
 
        private func navigateToLandingScreen() {
