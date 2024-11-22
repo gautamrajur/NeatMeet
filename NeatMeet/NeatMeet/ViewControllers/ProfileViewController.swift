@@ -8,6 +8,7 @@ import UIKit
 import PhotosUI
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 
 class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
@@ -18,6 +19,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var events: [Event] = []
     var loggedInUser = User(email: "", name: "", id: UUID(uuidString: "3111C8C1-4521-4318-91A1-84621D719D03") ?? UUID(), imageUrl: "")
     let db = Firestore.firestore()
+    let storage = Storage.storage()
+
     
     override func loadView() {
         view=profileScreen
@@ -161,9 +164,13 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                if let document = snapshot.documents.first {
                    let data = document.data()
                    if let name = data["name"] as? String,
-                      let email = data["email"] as? String {
+                      let email = data["email"] as? String,
+                      let imageUrl = data["imageUrl"] as? String{
                        profileScreen.textFieldName.text = name
                        profileScreen.textFieldEmail.text = email
+                       if let imageUrl = URL(string: imageUrl) {
+                           profileScreen.imageContacts.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_placeholder"))
+                       }
                    } else {
                        print("Invalid data format.")
                    }
