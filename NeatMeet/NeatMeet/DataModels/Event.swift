@@ -10,7 +10,7 @@ struct Event {
     var name: String
     var likesCount: Int
     var datePublished: Date
-    var publishedBy: String
+    var publishedBy: UUID
     var address: String
     var city: String
     var state: String
