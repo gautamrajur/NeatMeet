@@ -152,8 +152,7 @@ class LandingViewController: UIViewController {
                     let city = data["city"] as? String,
                     let state = data["state"] as? String,
                     let imageUrl = data["imageUrl"] as? String,
-                    let publishedByString = data["publishedBy"] as? String,
-                    let publishedBy = UUID(uuidString: publishedByString),
+                    let publishedBy = data["publishedBy"] as? String,
                     let eventDate = data["eventDate"] as? Timestamp
                 {
                     events.append(
