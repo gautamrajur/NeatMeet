@@ -9,15 +9,16 @@ struct User {
     var id: UUID
     var email: String
     var name: String
+    var imageUrl: String
     
-    init(email: String, name: String, id: UUID) {
+    init(email: String, name: String, id: UUID, imageUrl: String) {
           self.id = id
           self.email = email
           self.name = name
-        
+        self.imageUrl =  imageUrl
       }
       
     init(from firebaseUser: FirebaseAuth.User) {
-        self.init(email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "Unknown", id: UUID())
+        self.init(email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "Unknown", id: UUID(), imageUrl: "")
       }
 }

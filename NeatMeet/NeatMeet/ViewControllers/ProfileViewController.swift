@@ -16,7 +16,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var delegate:LandingViewController!
     var pickedImage:UIImage?
     var events: [Event] = []
-    var loggedInUser = User(email: "", name: "", id: UUID(uuidString: "E13F8CDD-44C1-49CC-864B-F11C283ACD91") ?? UUID())
+    var loggedInUser = User(email: "", name: "", id: UUID(uuidString: "3111C8C1-4521-4318-91A1-84621D719D03") ?? UUID(), imageUrl: "")
     let db = Firestore.firestore()
     
     override func loadView() {
