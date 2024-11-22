@@ -86,15 +86,6 @@ class LandingViewController: UIViewController {
     
     private func setUpProfileData() async {
         do {
-            if UserManager.shared.loggedInUser == nil, let currentUser = Auth.auth().currentUser {
-                UserManager.shared.loggedInUser = User(
-                    email: currentUser.email ?? "",
-                    name: currentUser.displayName ?? "Unknown",
-                    id: currentUser.uid,
-                    imageUrl: ""
-                )
-            }
-            
             guard let userIdString = UserManager.shared.loggedInUser?.id else {
                 print("No logged-in user ID found.")
                 return
