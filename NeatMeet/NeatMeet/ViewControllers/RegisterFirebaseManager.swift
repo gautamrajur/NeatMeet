@@ -25,6 +25,7 @@ extension RegisterViewController {
                         do {
                             try await Auth.auth().createUser(
                                 withEmail: email, password: password)
+                            
                             async let setName: Void =
                                 setNameOfTheUserInFirebaseAuth(name: name)
                             async let storeUserToFireStore: Void =
@@ -32,7 +33,12 @@ extension RegisterViewController {
                             _ = await (
                                 setName, storeUserToFireStore
                             )
-
+                            
+                            let currentUser = Auth.auth().currentUser
+                            let userId = currentUser?.uid
+                            
+                            
+                            UserManager.shared.loggedInUser = User(email: email, name: name, id:userId! , imageUrl: "")
                             let viewController = LandingViewController()
                             navigationController?.setViewControllers([viewController], animated: true)
                             self.setLoading(false)
@@ -53,20 +59,28 @@ extension RegisterViewController {
 
     func saveUserToFirestore(name: String, email: String) async {
         let db = Firestore.firestore()
-        let userID = UUID().uuidString
-        let userData: [String: Any] = [
-            "id": userID,
-            "name": name,
-            "email": email,
-        ]
+        
         do {
-            try await db.collection("users").document(userID).setData(userData)
-            print("User saved successfully to Firestore")
+            if let currentUser = Auth.auth().currentUser {
+                let userId = currentUser.uid
+                
+                let userData: [String: Any] = [
+                    "id": userId,
+                    "name": name,
+                    "email": email,
+                    "imageUrl": ""
+                ]
+                
+                try await db.collection("users").document(userId).setData(userData)
+                print("User saved successfully to Firestore")
+            } else {
+                print("No authenticated user found.")
+            }
         } catch {
             print("Error saving user to Firestore: \(error)")
         }
     }
-
+    
     func checkIfEmailExistsInFirestore(email: String) async throws -> Bool {
         let db = Firestore.firestore()
         let document = try await db.collection("users").document(email)

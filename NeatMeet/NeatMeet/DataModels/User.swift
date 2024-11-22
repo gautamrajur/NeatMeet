@@ -6,12 +6,12 @@
 //
 import FirebaseAuth
 struct User {
-    var id: UUID
+    var id: String
     var email: String
     var name: String
     var imageUrl: String
     
-    init(email: String, name: String, id: UUID, imageUrl: String) {
+    init(email: String, name: String, id: String, imageUrl: String) {
           self.id = id
           self.email = email
           self.name = name
@@ -19,6 +19,6 @@ struct User {
       }
       
     init(from firebaseUser: FirebaseAuth.User) {
-        self.init(email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "Unknown", id: UUID(), imageUrl: "")
+        self.init(email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "Unknown", id: "", imageUrl: "")
       }
 }
