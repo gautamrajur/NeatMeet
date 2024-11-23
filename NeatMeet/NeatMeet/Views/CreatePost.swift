@@ -13,10 +13,16 @@ class CreatePost: UIView {
     var headerLabel: UILabel!
     var eventNameTextField: UITextField!
     var locationTextField: UITextField!
-    var dateAndTimeTextField: UITextField!
+    var timePicker: UIDatePicker!
     var descriptionTextField: UITextView!
     var stateCityTextField: UITextField!
     var placeholderLabel: UILabel!
+    
+    
+    var stateButton: UIButton!
+    var cityButton: UIButton!
+    var cityDropButton: UIButton!
+    var stateDropButton: UIButton!
 
     var buttonTakePhoto: UIButton!
     var choosePhotoLabel: UILabel!
@@ -31,10 +37,12 @@ class CreatePost: UIView {
         setUpLocationTextField()
         setUpDateAndTimeTextField()
         setUpDescriptionTextField()
-        setUpStateAndCityTextField()
+        setUpStatePicker()
+        setUpCityPicker()
+//        setUpStateAndCityTextField()
         setupbuttonTakePhoto()
         setUpChoosePhoto()
-
+        
         initConstraints()
     }
 
@@ -75,6 +83,7 @@ class CreatePost: UIView {
     func setUpEventNameTextField() {
         eventNameTextField = UITextField()
         eventNameTextField.borderStyle = .roundedRect
+        eventNameTextField.layer.borderColor = UIColor.lightGray.cgColor
         eventNameTextField.placeholder = "Event Name"
         eventNameTextField.autocapitalizationType = .none
         eventNameTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -84,39 +93,61 @@ class CreatePost: UIView {
     func setUpLocationTextField() {
         locationTextField = UITextField()
         locationTextField.borderStyle = .roundedRect
+        locationTextField.layer.borderColor = UIColor.lightGray.cgColor
         locationTextField.placeholder = "Where Exactly?"
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
         contentWrapper.addSubview(locationTextField)
     }
 
     func setUpDateAndTimeTextField() {
-        dateAndTimeTextField = UITextField()
-        dateAndTimeTextField.borderStyle = .roundedRect
-        dateAndTimeTextField.placeholder = "What time?"
-        dateAndTimeTextField.translatesAutoresizingMaskIntoConstraints = false
-        contentWrapper.addSubview(dateAndTimeTextField)
+        
+        timePicker = UIDatePicker()
+        timePicker.datePickerMode = .dateAndTime
+        timePicker.preferredDatePickerStyle = .compact // Use wheels for a classic look
+        timePicker.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Optional: Set locale or 24-hour format
+        timePicker.locale = Locale(identifier: "en_US") // Adjust for desired locale
+        timePicker.calendar = Calendar.current
+        timePicker.minuteInterval = 1 // Set minute intervals (e.g., 1, 5, 15)
+        
+        contentWrapper.addSubview(timePicker)
+
     }
 
-    //    func setUpDescriptionTextField() {
-    //        descriptionTextField = UITextView()
-    //
-    //        descriptionTextField.frame = CGRect(x: 20, y: 100, width: 300, height: 200)
-    //        descriptionTextField.font = UIFont.systemFont(ofSize: 18)
-    //        descriptionTextField.isEditable = true
-    ////        descriptionTextField.layer.borderColor = UIColor.gray.cgColor
-    ////        descriptionTextField.layer.borderWidth = 1.0
-    ////        descriptionTextField.layer.cornerRadius = 8.0
-    ////
-    ////        descriptionTextField.text = "Description"
-    ////        descriptionTextField.textColor = .lightGray
-    //
-    //        descriptionTextField.translatesAutoresizingMaskIntoConstraints = false
-    //        contentWrapper.addSubview(descriptionTextField)
-    //    }
+    private func setUpStatePicker() {
+        stateButton = UIButton(type: .system)
+        stateButton.setTitle("Massachusetts", for: .normal)
+        stateButton.tintColor = .black
+        stateButton.translatesAutoresizingMaskIntoConstraints = false
+        contentWrapper.addSubview(stateButton) // Fix here
+
+        stateDropButton = UIButton(type: .system)
+        let stateDropImage = UIImage(systemName: "chevron.down")
+        stateDropButton.setImage(stateDropImage, for: .normal)
+        stateDropButton.tintColor = .black
+        stateDropButton.translatesAutoresizingMaskIntoConstraints = false
+        contentWrapper.addSubview(stateDropButton) // Fix here
+    }
+
+
+    private func setUpCityPicker() {
+        cityButton = UIButton(type: .system)
+        cityButton.setTitle("Boston", for: .normal)
+        cityButton.tintColor = .black
+        cityButton.translatesAutoresizingMaskIntoConstraints = false
+        contentWrapper.addSubview(cityButton) // Fix here
+
+        cityDropButton = UIButton(type: .system)
+        let cityDropImage = UIImage(systemName: "chevron.down")
+        cityDropButton.setImage(cityDropImage, for: .normal)
+        cityDropButton.tintColor = .black
+        cityDropButton.translatesAutoresizingMaskIntoConstraints = false
+        contentWrapper.addSubview(cityDropButton) // Fix here
+    }
 
     func setUpDescriptionTextField() {
         descriptionTextField = UITextView()
-        descriptionTextField.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
         descriptionTextField.layer.borderColor = UIColor.lightGray.cgColor
         descriptionTextField.layer.borderWidth = 1.0
         descriptionTextField.layer.cornerRadius = 8.0
@@ -128,7 +159,7 @@ class CreatePost: UIView {
 
         // Create the placeholder label
         placeholderLabel = UILabel()
-        placeholderLabel.text = "Enter your note here..."
+        placeholderLabel.text = "Tell us more about it..."
         placeholderLabel.textColor = .lightGray
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -174,16 +205,12 @@ class CreatePost: UIView {
                 equalTo: contentWrapper.leadingAnchor, constant: 20),
             locationTextField.trailingAnchor.constraint(
                 equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-
-            dateAndTimeTextField.topAnchor.constraint(
-                equalTo: locationTextField.bottomAnchor, constant: 32),
-            dateAndTimeTextField.leadingAnchor.constraint(
-                equalTo: contentWrapper.leadingAnchor, constant: 20),
-            dateAndTimeTextField.trailingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            
+            timePicker.topAnchor.constraint(equalTo: locationTextField.bottomAnchor, constant: 32),
+            timePicker.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
 
             descriptionTextField.topAnchor.constraint(
-                equalTo: dateAndTimeTextField.bottomAnchor, constant: 32),
+                equalTo: timePicker.bottomAnchor, constant: 32),
             descriptionTextField.leadingAnchor.constraint(
                 equalTo: contentWrapper.leadingAnchor, constant: 20),
             descriptionTextField.trailingAnchor.constraint(
@@ -195,17 +222,34 @@ class CreatePost: UIView {
             placeholderLabel.leadingAnchor.constraint(
                 equalTo: descriptionTextField.leadingAnchor, constant: 5),
 
-            stateCityTextField.topAnchor.constraint(
+            // State Button
+            stateButton.topAnchor.constraint(
                 equalTo: descriptionTextField.bottomAnchor, constant: 32),
-            stateCityTextField.leadingAnchor.constraint(
-                equalTo: contentWrapper.leadingAnchor, constant: 20),
-            stateCityTextField.trailingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            stateCityTextField.bottomAnchor.constraint(
-                equalTo: contentWrapper.bottomAnchor, constant: -32),
+            stateButton.centerXAnchor.constraint(
+                equalTo: contentWrapper.centerXAnchor),
+
+            // State Dropdown Button
+            stateDropButton.leadingAnchor.constraint(
+                equalTo: stateButton.trailingAnchor, constant: 8),
+            stateDropButton.centerYAnchor.constraint(equalTo: stateButton.centerYAnchor),
+            stateDropButton.widthAnchor.constraint(equalToConstant: 18),
+            stateDropButton.heightAnchor.constraint(equalToConstant: 18),
+
+            // City Button
+            cityButton.topAnchor.constraint(
+                equalTo: stateButton.bottomAnchor, constant: 16),
+            cityButton.centerXAnchor.constraint(
+                equalTo: contentWrapper.centerXAnchor),
+
+            // City Dropdown Button
+            cityDropButton.leadingAnchor.constraint(
+                equalTo: cityButton.trailingAnchor, constant: 8),
+            cityDropButton.centerYAnchor.constraint(equalTo: cityButton.centerYAnchor),
+            cityDropButton.widthAnchor.constraint(equalToConstant: 18),
+            cityDropButton.heightAnchor.constraint(equalToConstant: 18),
 
             buttonTakePhoto.topAnchor.constraint(
-                equalTo: stateCityTextField.bottomAnchor, constant: 32),
+                equalTo: cityButton.bottomAnchor, constant: 32),
             buttonTakePhoto.centerXAnchor.constraint(
                 equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             buttonTakePhoto.widthAnchor.constraint(equalToConstant: 150),
@@ -217,6 +261,9 @@ class CreatePost: UIView {
                 equalTo: contentWrapper.centerXAnchor),
         ])
     }
+
+
+
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

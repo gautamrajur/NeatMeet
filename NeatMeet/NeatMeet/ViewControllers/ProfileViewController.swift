@@ -122,7 +122,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                            let state = data["state"] as? String,
                            let imageUrl = data["imageUrl"] as? String,
                            let publishedBy = data["publishedBy"] as? String,
-                           let eventDate = data["eventDate"] as? Timestamp
+                           let eventDate = data["eventDate"] as? Timestamp,
+                           let eDetails = data["eventDescription"] as? String
                         {
                             let event = Event(
                                 id: document.documentID,
@@ -134,7 +135,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                 city: city,
                                 state: state,
                                 imageUrl: imageUrl,
-                                eventDate: eventDate.dateValue()
+                                eventDate: eventDate.dateValue(),
+                                eventDescription: eDetails
                             )
                             events.append(event)
                             events.sort { $0.eventDate > $1.eventDate }
