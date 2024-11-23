@@ -177,14 +177,10 @@ class CreatePost: UIView {
 
     func initConstraints() {
         NSLayoutConstraint.activate([
-            contentWrapper.topAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.topAnchor),
-            contentWrapper.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor),
-            contentWrapper.widthAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.widthAnchor),
-            contentWrapper.heightAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.heightAnchor),
+            contentWrapper.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            contentWrapper.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            contentWrapper.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            contentWrapper.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
 
             headerLabel.topAnchor.constraint(
                 equalTo: contentWrapper.topAnchor, constant: 16),
@@ -259,6 +255,7 @@ class CreatePost: UIView {
                 equalTo: buttonTakePhoto.bottomAnchor, constant: 16),
             choosePhotoLabel.centerXAnchor.constraint(
                 equalTo: contentWrapper.centerXAnchor),
+            choosePhotoLabel.bottomAnchor.constraint(equalTo: contentWrapper.bottomAnchor, constant: -20)
         ])
     }
 

@@ -72,8 +72,8 @@ class ShowPostView: UIView {
     func setUpEventName() {
         labelEventName = UILabel()
         labelEventName.font = UIFont.boldSystemFont(ofSize: 24)
-        labelEventName.numberOfLines = 1
-        labelEventName.lineBreakMode = .byTruncatingTail
+        labelEventName.numberOfLines = 0
+//        labelEventName.lineBreakMode = .byTruncatingTail
         labelEventName.translatesAutoresizingMaskIntoConstraints = false
         contentWrapper.addSubview(labelEventName)
         
@@ -120,8 +120,8 @@ class ShowPostView: UIView {
         NSLayoutConstraint.activate([
             contentWrapper.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
             contentWrapper.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
-            contentWrapper.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
-            contentWrapper.heightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.heightAnchor),
+            contentWrapper.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            contentWrapper.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
             
             eventImageView.topAnchor.constraint(equalTo: contentWrapper.topAnchor, constant: 32),
             eventImageView.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
@@ -130,11 +130,12 @@ class ShowPostView: UIView {
             
             labelEventName.topAnchor.constraint(equalTo: eventImageView.bottomAnchor, constant: 32),
             labelEventName.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
-            labelEventName.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
+            labelEventName.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, constant: -20),
             
             labelLocation.topAnchor.constraint(equalTo: labelEventName.bottomAnchor, constant: 16),
             labelLocation.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
-            labelLocation.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
+            labelLocation.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
+
             
             labelDateAndTime.topAnchor.constraint(equalTo: labelLocation.bottomAnchor, constant: 16),
             labelDateAndTime.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
@@ -142,11 +143,13 @@ class ShowPostView: UIView {
             
             labelStateAndCity.topAnchor.constraint(equalTo: labelDateAndTime.bottomAnchor, constant: 16),
             labelStateAndCity.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
-            labelStateAndCity.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
+            labelStateAndCity.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, constant: -20),
+
             
             labelDescription.topAnchor.constraint(equalTo: labelStateAndCity.bottomAnchor, constant: 16),
             labelDescription.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
-            labelDescription.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
+            labelDescription.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor, constant: -20),
+
 
             likeButton.topAnchor.constraint(equalTo: labelDescription.bottomAnchor, constant: 20),
             likeButton.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),

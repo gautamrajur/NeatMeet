@@ -284,5 +284,15 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         }
         return cell
     }
+    
+    func tableView(
+        _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
+    ) {
+        let event = events[indexPath.row]
+        let showPostViewController = ShowPostViewController()
+        showPostViewController.eventId = event.id!
+        navigationController?.pushViewController(
+            showPostViewController, animated: true)
+    }
 
 }
