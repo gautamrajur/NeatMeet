@@ -42,6 +42,7 @@ extension LandingViewController: UITableViewDelegate, UITableViewDataSource {
     ) {
         let event = displayedEvents[indexPath.row]
         let showPostViewController = ShowPostViewController()
+        showPostViewController.eventId = event.id!
         navigationController?.pushViewController(
             showPostViewController, animated: true)
     }

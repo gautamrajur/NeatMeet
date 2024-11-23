@@ -41,6 +41,7 @@ class ShowPostView: UIView {
     func setUpLikeButton() {
           likeButton = UIButton(type: .system)
           likeButton.setImage(UIImage(systemName: "hand.thumbsup.fill"), for: .normal)
+          likeButton.sizeToFit()
           likeButton.translatesAutoresizingMaskIntoConstraints = false
           contentWrapper.addSubview(likeButton)
       }
@@ -119,34 +120,29 @@ class ShowPostView: UIView {
         NSLayoutConstraint.activate([
             contentWrapper.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
             contentWrapper.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
-            contentWrapper.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
             contentWrapper.widthAnchor.constraint(equalTo: self.safeAreaLayoutGuide.widthAnchor),
             contentWrapper.heightAnchor.constraint(equalTo: self.safeAreaLayoutGuide.heightAnchor),
             
             eventImageView.topAnchor.constraint(equalTo: contentWrapper.topAnchor, constant: 32),
             eventImageView.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
-            eventImageView.widthAnchor.constraint(equalTo: contentWrapper.widthAnchor, multiplier: 0.8),
+            eventImageView.widthAnchor.constraint(equalTo: contentWrapper.widthAnchor),
             eventImageView.heightAnchor.constraint(equalToConstant: 200),
             
             labelEventName.topAnchor.constraint(equalTo: eventImageView.bottomAnchor, constant: 32),
             labelEventName.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
             labelEventName.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
-            labelEventName.bottomAnchor.constraint(lessThanOrEqualTo: labelLocation.topAnchor, constant: -16),
             
             labelLocation.topAnchor.constraint(equalTo: labelEventName.bottomAnchor, constant: 16),
             labelLocation.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
             labelLocation.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
-            labelLocation.bottomAnchor.constraint(lessThanOrEqualTo: labelDateAndTime.topAnchor, constant: -16),
             
             labelDateAndTime.topAnchor.constraint(equalTo: labelLocation.bottomAnchor, constant: 16),
             labelDateAndTime.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
             labelDateAndTime.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
-            labelDateAndTime.bottomAnchor.constraint(lessThanOrEqualTo: labelStateAndCity.topAnchor, constant: -16),
             
             labelStateAndCity.topAnchor.constraint(equalTo: labelDateAndTime.bottomAnchor, constant: 16),
             labelStateAndCity.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
             labelStateAndCity.trailingAnchor.constraint(equalTo: contentWrapper.trailingAnchor, constant: -20),
-            labelStateAndCity.bottomAnchor.constraint(lessThanOrEqualTo: labelDescription.topAnchor, constant: -16),
             
             labelDescription.topAnchor.constraint(equalTo: labelStateAndCity.bottomAnchor, constant: 16),
             labelDescription.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
@@ -154,13 +150,13 @@ class ShowPostView: UIView {
 
             likeButton.topAnchor.constraint(equalTo: labelDescription.bottomAnchor, constant: 20),
             likeButton.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
-            likeButton.heightAnchor.constraint(equalToConstant: 40),
-            likeButton.widthAnchor.constraint(equalToConstant: 120),
+
 
             labelLikeCount.centerYAnchor.constraint(equalTo: likeButton.centerYAnchor),
-            labelLikeCount.leadingAnchor.constraint(equalTo: likeButton.trailingAnchor, constant: 8),
-//            labelLikeCount.trailingAnchor.constraint(lessThanOrEqualTo: contentWrapper.trailingAnchor, constant: -20),
+            labelLikeCount.leadingAnchor.constraint(equalTo: likeButton.trailingAnchor, constant: 5),
             labelLikeCount.bottomAnchor.constraint(equalTo: contentWrapper.bottomAnchor, constant: -32),
+            
+
 
 
         ])

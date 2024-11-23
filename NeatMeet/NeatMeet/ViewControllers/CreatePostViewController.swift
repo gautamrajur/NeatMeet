@@ -195,14 +195,24 @@ class CreatePostViewController: UIViewController {
         createPost.cityButton.setTitle(selectedCity.name, for: .normal)
     }
     
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
     @objc func onTapPost() {
         // push to next screen.
         // set all the second screen variables
         guard let eName = createPost.eventNameTextField.text, !eName.isEmpty,
               let eLocation = createPost.locationTextField.text, !eLocation.isEmpty,
               let eDetails = createPost.descriptionTextField.text, !eDetails.isEmpty else {
-            print("Please fill all required fields.") // show alert later
-            return
+            showAlert(title: "Missing Information", message: "Please fill all required fields.")
+               return
         }
         let eDateTime = createPost.timePicker.date
         let ePhoto = createPost.buttonTakePhoto.imageView?.image

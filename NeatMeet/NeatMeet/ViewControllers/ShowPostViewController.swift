@@ -16,6 +16,7 @@ class ShowPostViewController: UIViewController {
     override func loadView() {
         view = showPost
     }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,5 +93,15 @@ class ShowPostViewController: UIViewController {
             }
         }
     }
+    
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//        
+//        // Only pop if this is the back button being pressed
+//        if isMovingFromParent {
+//            navigationController?.setViewControllers([LandingViewController()], animated: true)
+//         }
+//    }
+
 }
 
