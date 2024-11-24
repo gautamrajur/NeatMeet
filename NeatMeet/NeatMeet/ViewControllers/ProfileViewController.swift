@@ -39,22 +39,19 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         
     }
     
+    
+    
     @objc func onSaveButtonTapped() {
-        guard let textFieldEmail = profileScreen.textFieldEmail.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-              let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+        guard let textFieldName = profileScreen.textFieldName.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
             showAlert(title: "Error", message: "Please fill out all fields.")
             return
         }
         
-        if textFieldEmail.isEmpty || textFieldName.isEmpty {
-            showAlert(title: "Error", message: "Name and email cannot be empty!")
+        if textFieldName.isEmpty {
+            showAlert(title: "Error", message: "Name cannot be empty!")
             return
         }
         
-        if !isValidEmail(textFieldEmail) {
-            showAlert(title: "Invalid Email!", message: "Please enter a valid email address.")
-            return
-        }
         
         Task {
             do {
@@ -79,11 +76,9 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 
                 if let userIdString = UserManager.shared.loggedInUser?.id {
                     try await db.collection("users").document(userIdString).updateData([
-                        "email": textFieldEmail,
                         "name": textFieldName,
                     ])
                     
-                    UserManager.shared.loggedInUser?.email = textFieldEmail
                     UserManager.shared.loggedInUser?.name = textFieldName
                     
                     showAlert(title: "Success", message: "Profile updated successfully.")
@@ -96,12 +91,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
     }
 
-    
-    func isValidEmail(_ email: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
-    }
     
     @objc func displayAllEvents() {
            Task {
