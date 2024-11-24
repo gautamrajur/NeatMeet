@@ -18,8 +18,6 @@ class RegisterViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        title = "NeatMeet"
         
         self.view.backgroundColor = .white
         
