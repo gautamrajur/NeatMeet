@@ -12,4 +12,6 @@ extension Notification.Name {
     static let selectCity = Notification.Name("selectCity")
     static let loggedIn = Notification.Name("loggedIn")
     static let registered = Notification.Name("registered")
+    static let selectStateCreatePost = Notification.Name("selectStateInCreatePost")
+    static let selectCityCreatePost = Notification.Name("selectCityInCreatePost")
 }

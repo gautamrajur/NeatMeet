@@ -190,7 +190,8 @@ class LandingViewController: UIViewController {
                     let state = data["state"] as? String,
                     let imageUrl = data["imageUrl"] as? String,
                     let publishedBy = data["publishedBy"] as? String,
-                    let eventDate = data["eventDate"] as? Timestamp
+                    let eventDate = data["eventDate"] as? Timestamp,
+                    let eDetails = data["eventDescription"] as? String
                 {
                     events.append(
                         Event(
@@ -203,7 +204,8 @@ class LandingViewController: UIViewController {
                             city: city,
                             state: state,
                             imageUrl: imageUrl,
-                            eventDate: eventDate.dateValue()
+                            eventDate: eventDate.dateValue(),
+                            eventDescription: eDetails
                         )
                     )
                 }

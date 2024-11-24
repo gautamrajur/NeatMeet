@@ -8,13 +8,25 @@
 
 import UIKit
 import PhotosUI
+import FirebaseAuth
+import FirebaseFirestore
+import FirebaseStorage
 
 class CreatePostViewController: UIViewController {
 
     var createPost = CreatePost()
     var pickedImage:UIImage?
     
+    var currentUser:FirebaseAuth.User?
     let showPost = ShowPostViewController()
+    let database = Firestore.firestore()
+
+    var navController: UINavigationController?
+    let locationAPI = LocationAPI()
+    var citiesList: [City] = []
+    var statesList: [State] = []
+    var selectedState: State = State(name: "", isoCode: "")
+    var selectedCity: City = City(name: "", stateCode: "")
     
     override func loadView() {
         view = createPost
@@ -25,11 +37,70 @@ class CreatePostViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         hideKeyboardOnTapOutside()
+        addNotificationCenter()
         createPost.buttonTakePhoto.menu = getMenuImagePicker()
-        
         addPostButton()
+        configureButtonActions()
+        requestLocation()
+
+        
 
     }
+    
+    private func requestLocation() {
+        LocationManager.shared.getCurrentLocation { [weak self] result in
+            guard let self = self else { return }
+                
+            Task {
+                // Get all states first
+                self.statesList = await self.locationAPI.getAllStates()
+                    
+                if let (detectedStateCode, detectedCity) = result {
+                    // Find matching state in statesList using the ISO code
+                    if let matchingState = self.statesList.first(where: { $0.isoCode == detectedStateCode }) {
+                        self.selectedState = matchingState
+                        // Get cities for the detected state
+                        self.citiesList = await self.locationAPI.getAllCities(stateCode: matchingState.isoCode)
+                            
+                        // Find matching city
+                        if let matchingCity = self.citiesList.first(where: { $0.name.lowercased() == detectedCity.lowercased() }) {
+                            self.selectedCity = matchingCity
+                        } else {
+                            self.selectedCity = self.citiesList.first ?? City(name: "", stateCode: "")
+                        }
+                    } else {
+                        // Fallback to first state and city if no match found
+                        await self.initStateAndCity()
+                    }
+                } else {
+                    // Fallback to first state and city if location detection failed
+                    await self.initStateAndCity()
+                }
+                    
+                    // Update UI on main thread
+                DispatchQueue.main.async {
+                    self.createPost.stateButton.setTitle(self.selectedState.name, for: .normal)
+                    self.createPost.cityButton.setTitle(self.selectedCity.name, for: .normal)
+                }
+  
+            }
+        }
+    }
+    
+    private func initStateAndCity() async {
+        statesList = await locationAPI.getAllStates()
+        if statesList.count > 0 {
+            selectedState = statesList.first!
+            createPost.stateButton.setTitle(
+                selectedState.name, for: .normal)
+            citiesList = await locationAPI.getAllCities(
+                stateCode: selectedState.isoCode)
+            selectedCity = citiesList.first!
+            createPost.cityButton.setTitle(
+                selectedCity.name, for: .normal)
+        }
+    }
+
  
     func addPostButton() {
         let profileButton = UIButton(type: .system)
@@ -42,14 +113,172 @@ class CreatePostViewController: UIViewController {
             self, action: #selector(onTapPost), for: .touchUpInside)
     }
     
+    private func configureButtonActions() {
+        createPost.stateButton.addTarget(
+            self, action: #selector(stateButtonTapped), for: .touchUpInside)
+        createPost.stateDropButton.addTarget(
+            self, action: #selector(stateButtonTapped), for: .touchUpInside)
+        createPost.cityButton.addTarget(
+            self, action: #selector(cityButtonTapped), for: .touchUpInside)
+        createPost.cityDropButton.addTarget(
+            self, action: #selector(cityButtonTapped), for: .touchUpInside)
+    }
+    
+    func setUpBottomSearchSheet<T: Searchable>(
+        options: [T], selectedOption: T?,
+        notificationName: NSNotification.Name
+    ) {
+        let pickerVC = SearchablePickerViewController<T>(
+            options: options,
+            selectedOption: selectedOption,
+            notificationName: notificationName
+        )
+
+        navController = UINavigationController(rootViewController: pickerVC)
+        navController?.modalPresentationStyle = .pageSheet
+
+        if let bottomPickerSheet = navController?.sheetPresentationController {
+            bottomPickerSheet.detents = [.medium()]
+            bottomPickerSheet.prefersGrabberVisible = false
+            navController?.isModalInPresentation = true
+        }
+
+        if let navController = navController {
+            present(navController, animated: true)
+        }
+    }
+    
+    @objc func stateButtonTapped() {
+        setUpBottomSearchSheet(
+            options: statesList, selectedOption: selectedState,
+            notificationName: .selectStateCreatePost)
+    }
+
+    @objc func cityButtonTapped() {
+        setUpBottomSearchSheet(
+            options: citiesList, selectedOption: selectedCity,
+            notificationName: .selectCityCreatePost)
+    }
+    
+    // Notification Center
+    private func addNotificationCenter() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleStateSelected(notification:)),
+            name: .selectState, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(handleCitySelected(notification:)),
+            name: .selectCity, object: nil)
+    }
+    
+    // Notification handlers
+    
+    @objc private func handleStateSelected(notification: Notification) {
+        let state = (notification.object as! State)
+        if state.isoCode != selectedState.isoCode {
+            selectedState = state
+            createPost.stateButton.setTitle(selectedState.name, for: .normal)
+            Task {
+                citiesList = await locationAPI.getAllCities(
+                    stateCode: state.isoCode)
+                if !citiesList.isEmpty {
+                    selectedCity = citiesList.first!
+                    createPost.cityButton.setTitle(
+                        selectedCity.name, for: .normal)
+                }
+            }
+        }
+    }
+
+    @objc private func handleCitySelected(notification: Notification) {
+        let city = (notification.object as! City)
+        selectedCity = city
+        createPost.cityButton.setTitle(selectedCity.name, for: .normal)
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
     @objc func onTapPost() {
         // push to next screen.
         // set all the second screen variables
+        guard let eName = createPost.eventNameTextField.text, !eName.isEmpty,
+              let eLocation = createPost.locationTextField.text, !eLocation.isEmpty,
+              let eDetails = createPost.descriptionTextField.text, !eDetails.isEmpty else {
+            showAlert(title: "Missing Information", message: "Please fill all required fields.")
+               return
+        }
+        let eDateTime = createPost.timePicker.date
+        let ePhoto = createPost.buttonTakePhoto.imageView?.image
         
-        
-        
-        self.navigationController?.pushViewController(showPost, animated: true)
+        // Need to upload the image to Firebase Storage and retrieve the URL for it to populate in the db
+        var imageUrl: String? = nil
+        if let image = ePhoto, let imageData = image.jpegData(compressionQuality: 0.8) {
+            // Upload image to Firebase Storage
+            let imageRef = Storage.storage().reference().child("eventImages/\(UUID().uuidString).jpg")
+            
+            imageRef.putData(imageData, completion: {(url, error) in
+                if error == nil {
+                    imageRef.downloadURL(completion: {(url, error) in
+                        if error == nil {
+                            imageUrl = url?.absoluteString
+                            self.postEventToFirestore(eventName: eName, location: eLocation, description: eDetails, eventDate: eDateTime, imageUrl: imageUrl, eDetails: eDetails)
+                        }
+                    })
+                }
+            })
+        }
+
     }
+    
+    func postEventToFirestore(eventName: String, location: String, description: String, eventDate: Date, imageUrl: String?, eDetails: String) {
+        let db = Firestore.firestore()
+    
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("User is not logged in.")
+            return
+        }
+        
+        // Create the event data
+        let event = Event(name: eventName,
+                          likesCount: 0,
+                          datePublished: Date(),
+                          publishedBy: userId,
+                          address: location,
+                          city: selectedCity.name,
+                          state: selectedState.name,
+                          imageUrl: imageUrl ?? "",
+                          eventDate: eventDate,
+                          eventDescription: eDetails)
+        
+        
+        // Add the event to Firestore under the "events" collection
+        do {
+            let docRef = db.collection("events").document()
+            try docRef.setData(from: event) { error in
+                 if error != nil {
+                     print("Error adding event to Firestore")
+                 } else {
+                     print("Event successfully added to Firestore!")
+                     // Navigate to the Show Post Page
+                     let documentID = docRef.documentID
+                
+                     self.showPost.eventId = documentID
+                     
+                     self.navigationController?.pushViewController(self.showPost, animated: true)
+                 }
+             }
+        } catch {
+            print("Error adding document!")
+        }
+    }
+    
     
      func getMenuImagePicker() -> UIMenu{
          let menuItems = [
