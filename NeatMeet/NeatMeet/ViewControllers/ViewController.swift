@@ -12,24 +12,22 @@ import FirebaseAuth
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
-           super.viewDidLoad()
-        if let currentUser = Auth.auth().currentUser{
-            
-            if currentUser == nil {
-                print("calling logging screen")
-                navigateToLoginScreen()
-            } else {
-                
-                UserManager.shared.loggedInUser = User(
-                    email: currentUser.email ?? "",
-                    name: currentUser.displayName ?? "Unknown",
-                    id: currentUser.uid,
-                    imageUrl: ""
-                )
-                navigateToLandingScreen()
-            }
+        super.viewDidLoad()
+        if let currentUser = Auth.auth().currentUser {
+            // User is logged in
+            UserManager.shared.loggedInUser = User(
+                email: currentUser.email ?? "",
+                name: currentUser.displayName ?? "Unknown",
+                id: currentUser.uid,
+                imageUrl: ""
+            )
+            navigateToLandingScreen()
+        } else {
+            // User is not logged in
+            print("Calling login screen")
+            navigateToLoginScreen()
         }
-       }
+    }
 
        private func navigateToLandingScreen() {
            let landingVC = LandingViewController()
