@@ -22,6 +22,7 @@ class LandingViewController: UIViewController {
     let locationAPI = LocationAPI()
     var citiesList: [City] = []
     var statesList: [State] = []
+    
 
     override func loadView() {
         view = landingView
@@ -30,18 +31,19 @@ class LandingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
-        displayUserDetails()
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
         requestLocation()
     }
     
-    @objc func displayUserDetails() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         Task {
             await setUpProfileData()
         }
     }
+    
     private func requestLocation() {
         LocationManager.shared.getCurrentLocation { [weak self] result in
             guard let self = self else { return }
