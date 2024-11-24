@@ -270,7 +270,8 @@ class CreatePostViewController: UIViewController {
                      let documentID = docRef.documentID
                 
                      self.showPost.eventId = documentID
-                     
+                     let data = ["state": self.selectedState, "city": self.selectedCity]
+                     NotificationCenter.default.post(name: .newEventAdded, object: nil, userInfo: data)
                      self.navigationController?.pushViewController(self.showPost, animated: true)
                  }
              }

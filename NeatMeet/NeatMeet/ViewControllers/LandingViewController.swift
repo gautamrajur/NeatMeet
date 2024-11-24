@@ -22,12 +22,11 @@ class LandingViewController: UIViewController {
     let locationAPI = LocationAPI()
     var citiesList: [City] = []
     var statesList: [State] = []
-    
 
     override func loadView() {
         view = landingView
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
@@ -36,34 +35,41 @@ class LandingViewController: UIViewController {
         configureUIElements()
         requestLocation()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         Task {
             await setUpProfileData()
         }
     }
-    
+
     private func requestLocation() {
         LocationManager.shared.getCurrentLocation { [weak self] result in
             guard let self = self else { return }
-                
+
             Task {
                 // Get all states first
                 self.statesList = await self.locationAPI.getAllStates()
-                    
+
                 if let (detectedStateCode, detectedCity) = result {
                     // Find matching state in statesList using the ISO code
-                    if let matchingState = self.statesList.first(where: { $0.isoCode == detectedStateCode }) {
+                    if let matchingState = self.statesList.first(where: {
+                        $0.isoCode == detectedStateCode
+                    }) {
                         self.selectedState = matchingState
                         // Get cities for the detected state
-                        self.citiesList = await self.locationAPI.getAllCities(stateCode: matchingState.isoCode)
-                            
+                        self.citiesList = await self.locationAPI.getAllCities(
+                            stateCode: matchingState.isoCode)
+
                         // Find matching city
-                        if let matchingCity = self.citiesList.first(where: { $0.name.lowercased() == detectedCity.lowercased() }) {
+                        if let matchingCity = self.citiesList.first(where: {
+                            $0.name.lowercased() == detectedCity.lowercased()
+                        }) {
                             self.selectedCity = matchingCity
                         } else {
-                            self.selectedCity = self.citiesList.first ?? City(name: "", stateCode: "")
+                            self.selectedCity =
+                                self.citiesList.first
+                                ?? City(name: "", stateCode: "")
                         }
                     } else {
                         // Fallback to first state and city if no match found
@@ -73,33 +79,37 @@ class LandingViewController: UIViewController {
                     // Fallback to first state and city if location detection failed
                     await self.initStateAndCity()
                 }
-                    
-                    // Update UI on main thread
+
+                // Update UI on main thread
                 DispatchQueue.main.async {
-                    self.landingView.stateButton.setTitle(self.selectedState.name, for: .normal)
-                    self.landingView.cityButton.setTitle(self.selectedCity.name, for: .normal)
+                    self.landingView.stateButton.setTitle(
+                        self.selectedState.name, for: .normal)
+                    self.landingView.cityButton.setTitle(
+                        self.selectedCity.name, for: .normal)
                 }
-                    
+
                 // Fetch events for the selected location
                 await self.getAllEvents()
             }
         }
     }
-    
+
     private func setUpProfileData() async {
         do {
             guard let userIdString = UserManager.shared.loggedInUser?.id else {
                 print("No logged-in user ID found.")
                 return
             }
-            
-            let snapshot = try await db.collection("users").document(userIdString).getDocument()
-            
+
+            let snapshot = try await db.collection("users").document(
+                userIdString
+            ).getDocument()
+
             guard let data = snapshot.data() else {
                 print("No user found with the given ID.")
                 return
             }
-            
+
             if let imageUrl = data["imageUrl"] as? String {
                 if let imageUrlURL = URL(string: imageUrl) {
                     landingView.profileImage.sd_setImage(
@@ -109,15 +119,17 @@ class LandingViewController: UIViewController {
                     )
                 }
                 UserManager.shared.loggedInUser?.imageUrl = imageUrl
-                
+
             } else {
                 print("Invalid user data format.")
             }
         } catch {
-            print("Error fetching user data from Firestore: \(error.localizedDescription)")
+            print(
+                "Error fetching user data from Firestore: \(error.localizedDescription)"
+            )
         }
     }
-    
+
     private func initStateAndCity() async {
         statesList = await locationAPI.getAllStates()
         if statesList.count > 0 {
@@ -139,7 +151,8 @@ class LandingViewController: UIViewController {
         landingView.eventTableView.dataSource = self
         landingView.eventTableView.separatorStyle = .none
         landingView.searchBar.delegate = self
-
+        landingView.refreshControl.addTarget(
+            self, action: #selector(refreshData(_:)), for: .valueChanged)
         let tapRecognizer = UITapGestureRecognizer(
             target: self, action: #selector(hideKeyboardOnTap))
         tapRecognizer.cancelsTouchesInView = false
@@ -147,6 +160,13 @@ class LandingViewController: UIViewController {
 
     @objc func hideKeyboardOnTap() {
         view.endEditing(true)
+    }
+    
+    @objc func refreshData(_ sender: Any) {
+        Task {
+            await getAllEvents()
+            landingView.refreshControl.endRefreshing()
+        }
     }
 
     private func configureButtonActions() {
@@ -169,6 +189,9 @@ class LandingViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleCitySelected(notification:)),
             name: .selectCity, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(fetchEvents(notification:)),
+            name: .newEventAdded, object: nil)
     }
 
     func getAllEvents() async {
@@ -217,6 +240,22 @@ class LandingViewController: UIViewController {
 
         } catch {
             print("Error getting documents: \(error)")
+        }
+    }
+
+    @objc func fetchEvents(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let state = userInfo["state"] as? State,
+            let city = userInfo["city"] as? City
+        else {
+            return
+        }
+        if state.isoCode == selectedState.isoCode
+            && city.name == selectedCity.name
+        {
+            Task {
+                await getAllEvents()
+            }
         }
     }
 
