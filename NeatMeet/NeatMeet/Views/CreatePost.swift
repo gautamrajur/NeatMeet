@@ -53,10 +53,10 @@ class CreatePost: UIView {
     }
 
     func setupbuttonTakePhoto() {
-        buttonTakePhoto = UIButton(type: .system)
+        buttonTakePhoto = UIButton(type: .custom)
         buttonTakePhoto.setTitle("", for: .normal)
         buttonTakePhoto.showsMenuAsPrimaryAction = true
-        buttonTakePhoto.setImage(UIImage(systemName: "photo"), for: .normal)
+        buttonTakePhoto.setImage(UIImage(systemName: "photo")?.withRenderingMode(.alwaysOriginal), for: .normal)
         buttonTakePhoto.contentHorizontalAlignment = .fill
         buttonTakePhoto.contentVerticalAlignment = .fill
         buttonTakePhoto.imageView?.contentMode = .scaleAspectFit
@@ -66,7 +66,7 @@ class CreatePost: UIView {
 
     func setUpHeaderlabel() {
         headerLabel = UILabel()
-        headerLabel.text = "Create a Post"
+        headerLabel.text = "Create an Event"
         headerLabel.font = UIFont.boldSystemFont(ofSize: 24)
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
         contentWrapper.addSubview(headerLabel)

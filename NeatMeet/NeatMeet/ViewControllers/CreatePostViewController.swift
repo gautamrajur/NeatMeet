@@ -87,7 +87,7 @@ class CreatePostViewController: UIViewController {
 
         createPost.stateButton.setTitle(selectedState.name, for: .normal)
         createPost.cityButton.setTitle(selectedCity.name, for: .normal)
-
+        print("This is String: \(event.imageUrl)")
         if !event.imageUrl.isEmpty {
             loadImage(from: event.imageUrl)
         }
@@ -98,9 +98,10 @@ class CreatePostViewController: UIViewController {
 
         URLSession.shared.dataTask(with: imageURL) { data, _, error in
             guard let data = data, error == nil, let image = UIImage(data: data) else { return }
-
+            image.withRenderingMode(.alwaysOriginal)
             DispatchQueue.main.async {
                 self.createPost.buttonTakePhoto.setImage(image, for: .normal)
+//                self.createPost.buttonTakePhoto.setBackgroundImage(image, for: .normal)
                 self.pickedImage = image
             }
         }.resume()
@@ -322,6 +323,7 @@ class CreatePostViewController: UIViewController {
         if isEditingPost, let eventId = eventId {
                // Update existing event
                do {
+                   print("This an edit image: \(imageUrl!)")
                    try db.collection("events").document(eventId).setData(from: event) { error in
                        if error != nil {
                            print("Error updating event to Firestore")
