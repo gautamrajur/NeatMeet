@@ -28,6 +28,9 @@ class CreatePostViewController: UIViewController {
     var selectedState: State = State(name: "", isoCode: "")
     var selectedCity: City = City(name: "", stateCode: "")
     
+    var eventId: String?
+    var isEditingPost: Bool = false
+    
     override func loadView() {
         view = createPost
     }
@@ -35,6 +38,11 @@ class CreatePostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        if isEditingPost, let eventId = eventId {
+            createPost.headerLabel.text = "Update a Post"
+            fetchEventDetails(for: eventId)
+        }
         
         hideKeyboardOnTapOutside()
         addNotificationCenter()
@@ -46,6 +54,59 @@ class CreatePostViewController: UIViewController {
         
 
     }
+    
+    private func fetchEventDetails(for eventId: String) {
+        let db = Firestore.firestore()
+        db.collection("events").document(eventId).getDocument { [weak self] document, error in
+            if let error = error {
+                print("Error fetching event: \(error.localizedDescription)")
+                return
+            }
+
+            guard let document = document, document.exists,
+                  let event = try? document.data(as: Event.self) else {
+                print("Failed to decode event data.")
+                return
+            }
+
+            DispatchQueue.main.async {
+                self?.populateFields(with: event)
+            }
+        }
+    }
+
+    private func populateFields(with event: Event) {
+        createPost.eventNameTextField.text = event.name
+        createPost.locationTextField.text = event.address
+        createPost.descriptionTextField.text = event.eventDescription
+        createPost.timePicker.date = event.eventDate
+
+        selectedState = State(name: event.state, isoCode: "") // Adjust as needed
+        selectedCity = City(name: event.city, stateCode: "")
+
+        createPost.stateButton.setTitle(selectedState.name, for: .normal)
+        createPost.cityButton.setTitle(selectedCity.name, for: .normal)
+
+        if !event.imageUrl.isEmpty {
+            loadImage(from: event.imageUrl)
+        }
+    }
+
+    private func loadImage(from url: String) {
+        guard let imageURL = URL(string: url) else { return }
+
+        URLSession.shared.dataTask(with: imageURL) { data, _, error in
+            guard let data = data, error == nil, let image = UIImage(data: data) else { return }
+
+            DispatchQueue.main.async {
+                self.createPost.buttonTakePhoto.setImage(image, for: .normal)
+                self.pickedImage = image
+            }
+        }.resume()
+    }
+
+    
+    
     
     private func requestLocation() {
         LocationManager.shared.getCurrentLocation { [weak self] result in
@@ -257,26 +318,48 @@ class CreatePostViewController: UIViewController {
                           eventDate: eventDate,
                           eventDescription: eDetails)
         
-        
-        // Add the event to Firestore under the "events" collection
-        do {
-            let docRef = db.collection("events").document()
-            try docRef.setData(from: event) { error in
-                 if error != nil {
-                     print("Error adding event to Firestore")
-                 } else {
-                     print("Event successfully added to Firestore!")
-                     // Navigate to the Show Post Page
-                     let documentID = docRef.documentID
-                
-                     self.showPost.eventId = documentID
-                     
-                     self.navigationController?.pushViewController(self.showPost, animated: true)
-                 }
-             }
-        } catch {
-            print("Error adding document!")
+        if isEditingPost, let eventId = eventId {
+               // Update existing event
+               do {
+                   try db.collection("events").document(eventId).setData(from: event) { error in
+                       if error != nil {
+                           print("Error updating event to Firestore")
+                       } else {
+                           print("Event successfully updated in Firestore!")
+                           self.createPost.placeholderLabel.isHidden = true
+                           self.showPost.eventId = eventId
+                           NotificationCenter.default.post(name: .contentEdited,object: nil)
+                           self.navigationController?.popViewController(animated: true)
+                       }
+                   }
+
+               } catch {
+                   print("Failed to update event")
+               }
         }
+        else {
+            
+            // Add the event to Firestore under the "events" collection
+            do {
+                let docRef = db.collection("events").document()
+                try docRef.setData(from: event) { error in
+                     if error != nil {
+                         print("Error adding event to Firestore")
+                     } else {
+                         print("Event successfully added to Firestore!")
+                         // Navigate to the Show Post Page
+                         let documentID = docRef.documentID
+                    
+                         self.showPost.eventId = documentID
+                         
+                         self.navigationController?.pushViewController(self.showPost, animated: true)
+                     }
+                 }
+            } catch {
+                print("Error adding document!")
+            }
+        }
+  
     }
     
     

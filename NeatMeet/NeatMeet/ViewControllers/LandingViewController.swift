@@ -34,8 +34,10 @@ class LandingViewController: UIViewController {
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
+        addEditNotiifcationObservor()
         requestLocation()
     }
+    
     
     @objc func displayUserDetails() {
         Task {
@@ -335,5 +337,18 @@ class LandingViewController: UIViewController {
         setUpBottomSearchSheet(
             options: citiesList, selectedOption: selectedCity,
             notificationName: .selectCity)
+    }
+    
+    func addEditNotiifcationObservor() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(refreshScreen(notification:)),
+            name: .contentEdited, object: nil)
+    }
+    
+    @objc func refreshScreen(notification: Notification) {
+        // Add code to refresh the event table.
+        Task {
+            await self.getAllEvents()
+        }
     }
 }
