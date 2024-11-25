@@ -327,8 +327,13 @@ class LandingViewController: UIViewController {
                     selectedCity = citiesList.first!
                     landingView.cityButton.setTitle(
                         selectedCity.name, for: .normal)
-                    await getAllEvents()
+                } else {
+                    citiesList = []
+                    selectedCity = City(name: "", stateCode: "")
+                    landingView.cityButton.setTitle(
+                        selectedCity.name, for: .normal)
                 }
+                await getAllEvents()
             }
         }
     }
