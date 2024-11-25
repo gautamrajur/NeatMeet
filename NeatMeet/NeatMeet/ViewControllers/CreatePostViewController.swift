@@ -226,10 +226,10 @@ class CreatePostViewController: UIViewController {
     private func addNotificationCenter() {
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleStateSelected(notification:)),
-            name: .selectState, object: nil)
+            name: .selectStateCreatePost, object: nil)
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleCitySelected(notification:)),
-            name: .selectCity, object: nil)
+            name: .selectCityCreatePost, object: nil)
     }
     
     // Notification handlers
