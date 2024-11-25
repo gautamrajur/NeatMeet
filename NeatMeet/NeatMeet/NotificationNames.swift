@@ -15,4 +15,5 @@ extension Notification.Name {
     static let selectStateCreatePost = Notification.Name("selectStateInCreatePost")
     static let selectCityCreatePost = Notification.Name("selectCityInCreatePost")
     static let contentEdited = Notification.Name("contentEdited")
+    static let likeUpdated = Notification.Name("likeUpdated")
 }

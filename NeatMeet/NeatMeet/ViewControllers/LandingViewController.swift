@@ -343,6 +343,9 @@ class LandingViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self, selector: #selector(refreshScreen(notification:)),
             name: .contentEdited, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(refreshScreen(notification:)),
+            name: .likeUpdated, object: nil)
     }
     
     @objc func refreshScreen(notification: Notification) {

@@ -41,6 +41,7 @@ class CreatePostViewController: UIViewController {
         
         if isEditingPost, let eventId = eventId {
             createPost.headerLabel.text = "Update a Post"
+            self.createPost.placeholderLabel.isHidden = true
             fetchEventDetails(for: eventId)
         }
         
@@ -326,7 +327,6 @@ class CreatePostViewController: UIViewController {
                            print("Error updating event to Firestore")
                        } else {
                            print("Event successfully updated in Firestore!")
-                           self.createPost.placeholderLabel.isHidden = true
                            self.showPost.eventId = eventId
                            NotificationCenter.default.post(name: .contentEdited,object: nil)
                            self.navigationController?.popViewController(animated: true)

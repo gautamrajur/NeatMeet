@@ -64,10 +64,11 @@ class ShowPostViewController: UIViewController {
             "likesCount": FieldValue.increment(Int64(1))
         ]) { error in
             if let error = error {
-                print("Error incrementing like count: \(error.localizedDescription)")
+                print("Error incrementing like count")
             } else {
                 print("Like count incremented successfully!")
-                completion() 
+                NotificationCenter.default.post(name: .likeUpdated, object: nil)
+                completion()
             }
         }
     }
