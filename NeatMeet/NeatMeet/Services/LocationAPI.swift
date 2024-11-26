@@ -20,7 +20,7 @@ public class LocationAPI {
         ]
         let headers: HTTPHeaders = [
             "x-rapidapi-key":
-                "df443b20d7msh7e10629ad7de4b9p117670jsn608051335aa9",
+                "1da2d5d98bmsh2ca443e33bccf2bp19c5a1jsnce71eed655cc",
             "x-rapidapi-host":
                 "country-state-city-search-rest-api.p.rapidapi.com",
         ]
@@ -62,7 +62,7 @@ public class LocationAPI {
         ]
         let headers: HTTPHeaders = [
             "x-rapidapi-key":
-                "df443b20d7msh7e10629ad7de4b9p117670jsn608051335aa9",
+                "1da2d5d98bmsh2ca443e33bccf2bp19c5a1jsnce71eed655cc",
             "x-rapidapi-host":
                 "country-state-city-search-rest-api.p.rapidapi.com",
         ]
