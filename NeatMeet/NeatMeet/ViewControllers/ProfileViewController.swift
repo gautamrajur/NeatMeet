@@ -19,7 +19,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var events: [Event] = []
     let db = Firestore.firestore()
     let storage = Storage.storage()
-
+    var refreshTimer: Timer?
     
     override func loadView() {
         view=profileScreen
@@ -29,6 +29,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        startRefreshing()
         addEditNotiifcationObservor()
         profileScreen.editButton.menu = getMenuImagePicker()
         displayAllEvents()
@@ -311,5 +312,10 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
             name: .likeUpdated, object: nil)
     }
     
+    
+    func startRefreshing() {
+        // Start a timer that calls refreshScreen every 5 seconds
+        refreshTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(displayAllEvents), userInfo: nil, repeats: true)
+    }
 
 }

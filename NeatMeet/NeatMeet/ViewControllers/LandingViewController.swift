@@ -22,7 +22,8 @@ class LandingViewController: UIViewController {
     let locationAPI = LocationAPI()
     var citiesList: [City] = []
     var statesList: [State] = []
-
+    var refreshTimer: Timer?
+    
     override func loadView() {
         view = landingView
     }
@@ -30,6 +31,7 @@ class LandingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
+        startRefreshing()
         addNotificationCenter()
         configureButtonActions()
         configureUIElements()
@@ -386,17 +388,30 @@ class LandingViewController: UIViewController {
     
     func addEditNotiifcationObservor() {
         NotificationCenter.default.addObserver(
-            self, selector: #selector(refreshScreen(notification:)),
+            self, selector: #selector(refreshScreenOnNotificatiion(notification:)),
             name: .contentEdited, object: nil)
         NotificationCenter.default.addObserver(
-            self, selector: #selector(refreshScreen(notification:)),
+            self, selector: #selector(refreshScreenOnNotificatiion(notification:)),
             name: .likeUpdated, object: nil)
     }
     
-    @objc func refreshScreen(notification: Notification) {
+    @objc func refreshScreenOnNotificatiion(notification: Notification) {
         // Add code to refresh the event table.
         Task {
             await self.getAllEvents()
         }
     }
+    
+    @objc func refreshScreen() {
+        // Add code to refresh the event table.
+        Task {
+            await self.getAllEvents()
+        }
+    }
+
+    func startRefreshing() {
+        // Start a timer that calls refreshScreen every 5 seconds
+        refreshTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(refreshScreen), userInfo: nil, repeats: true)
+    }
+    
 }

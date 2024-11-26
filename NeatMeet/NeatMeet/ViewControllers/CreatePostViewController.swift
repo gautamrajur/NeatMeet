@@ -317,23 +317,25 @@ class CreatePostViewController: UIViewController {
                           eventDescription: eDetails)
         
         if isEditingPost, let eventId = eventId {
-               // Update existing event
-               do {
-                   print("This an edit image: \(imageUrl!)")
-                   try db.collection("events").document(eventId).setData(from: event) { error in
-                       if error != nil {
-                           print("Error updating event to Firestore")
-                       } else {
-                           print("Event successfully updated in Firestore!")
-                           self.showPost.eventId = eventId
-                           NotificationCenter.default.post(name: .contentEdited,object: nil)
-                           self.navigationController?.popViewController(animated: true)
-                       }
-                   }
-
-               } catch {
-                   print("Failed to update event")
-               }
+            // Update existing event
+            do {
+                try db.collection("events").document(eventId).setData(from: event) { error in
+                    if error != nil {
+                        print("Error updating event to Firestore")
+                    } else {
+                        print("Event successfully updated in Firestore!")
+                        
+                        // Remove eventId from the likes collections of all users
+                        self.removeEventFromUserLikes(eventId: eventId) {
+                            self.showPost.eventId = eventId
+                            NotificationCenter.default.post(name: .contentEdited, object: nil)
+                            self.navigationController?.popViewController(animated: true)
+                        }
+                    }
+                }
+            } catch {
+                print("Failed to update event")
+            }
         }
         else {
             
@@ -358,6 +360,49 @@ class CreatePostViewController: UIViewController {
             }
         }
   
+    }
+    
+    
+    func removeEventFromUserLikes(eventId: String, completion: @escaping () -> Void) {
+        let db = Firestore.firestore()
+        
+        // Query all users
+        db.collection("users").getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error fetching users: \(error.localizedDescription)")
+                completion()
+                return
+            }
+            
+            guard let documents = querySnapshot?.documents else {
+                print("No users found.")
+                completion()
+                return
+            }
+            
+            let group = DispatchGroup()
+            
+            for document in documents {
+                let userId = document.documentID
+                let likesRef = db.collection("users").document(userId).collection("likes").document(eventId)
+                
+                group.enter()
+                // Delete the eventId from the user's likes collection
+                likesRef.delete { error in
+                    if let error = error {
+                        print("Error removing eventId from user \(userId)")
+                    } else {
+                        print("Removed eventId from user \(userId)'s likes collection.")
+                    }
+                    group.leave()
+                }
+            }
+            
+            group.notify(queue: .main) {
+                print("EventId removal from all likes collections complete.")
+                completion()
+            }
+        }
     }
     
     

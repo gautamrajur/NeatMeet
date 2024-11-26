@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseFirestore
+import FirebaseAuth
 
 class ShowPostViewController: UIViewController {
 
@@ -17,42 +18,87 @@ class ShowPostViewController: UIViewController {
         view = showPost
     }
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         fetchEventAndDisplay(eventId: eventId)
         showPost.likeButton.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
         setUpEditButton()
-        addEditNotiifcationObservor()
+        addEditNotificationObserver()
     }
+   
     
-    func addEditNotiifcationObservor() {
+    func addEditNotificationObserver() {
         NotificationCenter.default.addObserver(
-            self, selector: #selector(refreshScreen(notification:)),
-            name: .contentEdited, object: nil)
+            self,
+            selector: #selector(refreshScreen(notification:)),
+            name: .contentEdited,
+            object: nil
+        )
     }
   
     @objc func refreshScreen(notification: Notification) {
         fetchEventAndDisplay(eventId: eventId)
     }
 
-    
+
     func setUpEditButton() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self,action: #selector(onEditBarButtonTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .edit,
+            target: self,
+            action: #selector(onEditBarButtonTapped)
+        )
     }
-    
-    
+
     @objc func onEditBarButtonTapped() {
         let createPostVC = CreatePostViewController()
         createPostVC.isEditingPost = true
         createPostVC.eventId = eventId
         navigationController?.pushViewController(createPostVC, animated: true)
     }
-    
-    
+
+
     @objc func didTapLikeButton() {
-        incrementLikeCount(eventId: eventId) { [weak self] in
-            self?.fetchLatestLikeCount(eventId: self?.eventId ?? "")
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("User not logged in") // Or take him to logiin page
+            return
+        }
+        
+        checkIfUserLikedEvent(userId: userId, eventId: eventId) { [weak self] alreadyLiked in
+            if alreadyLiked {
+                print("User has already liked this event.")
+            } else {
+                self?.incrementLikeCount(eventId: self?.eventId ?? "") {
+                    self?.recordUserLike(userId: userId, eventId: self?.eventId ?? "")
+                    self?.fetchLatestLikeCount(eventId: self?.eventId ?? "")
+                }
+            }
+        }
+    }
+
+    func checkIfUserLikedEvent(userId: String, eventId: String, completion: @escaping (Bool) -> Void) {
+        let db = Firestore.firestore()
+        let userLikesRef = db.collection("users").document(userId).collection("likes")
+
+        userLikesRef.document(eventId).getDocument { document, error in
+            if let error = error {
+                print("Error checking user liked the event")
+                completion(false)
+                return
+            }
+            completion(document?.exists == true)
+        }
+    }
+
+    func recordUserLike(userId: String, eventId: String) {
+        let db = Firestore.firestore()
+        let userLikesRef = db.collection("users").document(userId).collection("likes")
+
+        userLikesRef.document(eventId).setData([:]) { error in
+            if let error = error {
+                print("Error recording user like")
+            } else {
+                print("User like recorded successfully!")
+            }
         }
     }
 
@@ -64,7 +110,7 @@ class ShowPostViewController: UIViewController {
             "likesCount": FieldValue.increment(Int64(1))
         ]) { error in
             if let error = error {
-                print("Error incrementing like count")
+                print("Error incrementing like count: \(error.localizedDescription)")
             } else {
                 print("Like count incremented successfully!")
                 NotificationCenter.default.post(name: .likeUpdated, object: nil)
@@ -78,7 +124,7 @@ class ShowPostViewController: UIViewController {
 
         db.collection("events").document(eventId).getDocument { [weak self] (document, error) in
             if let error = error {
-                print("Error fetching latest like count: \(error.localizedDescription)")
+                print("Error fetching latest like count")
                 return
             }
 
@@ -95,12 +141,13 @@ class ShowPostViewController: UIViewController {
         }
     }
 
+
     func fetchEventAndDisplay(eventId: String) {
         let db = Firestore.firestore()
 
         db.collection("events").document(eventId).getDocument { [weak self] (document, error) in
             if let error = error {
-                print("Error fetching event")
+                print("Error fetching event: \(error.localizedDescription)")
                 return
             }
 
@@ -116,19 +163,8 @@ class ShowPostViewController: UIViewController {
                     self?.showPost.updateLikeCountLabel(count: event.likesCount)
                 }
             } catch {
-                print("Error decoding event data")
+                print("Error decoding event data: \(error.localizedDescription)")
             }
         }
     }
-    
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        
-//        // Only pop if this is the back button being pressed
-//        if isMovingFromParent {
-//            navigationController?.setViewControllers([LandingViewController()], animated: true)
-//         }
-//    }
-
 }
-
