@@ -48,7 +48,7 @@ class CreatePostViewController: UIViewController {
         hideKeyboardOnTapOutside()
         addNotificationCenter()
         createPost.buttonTakePhoto.menu = getMenuImagePicker()
-        addPostButton()
+        addSaveButton()
         configureButtonActions()
         requestLocation()
 
@@ -165,14 +165,10 @@ class CreatePostViewController: UIViewController {
     }
 
  
-    func addPostButton() {
-        let profileButton = UIButton(type: .system)
-        profileButton.setImage(
-            UIImage(systemName: "plus.circle"), for: .normal)
+    func addSaveButton() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            customView: profileButton)
-
-        profileButton.addTarget(
+            customView: createPost.saveButton)
+        createPost.saveButton.addTarget(
             self, action: #selector(onTapPost), for: .touchUpInside)
     }
     
