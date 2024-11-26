@@ -8,7 +8,7 @@
 import UIKit
 
 class CreatePost: UIView {
-
+    
     var contentWrapper: UIScrollView!
     var headerLabel: UILabel!
     var eventNameTextField: UITextField!
@@ -23,14 +23,14 @@ class CreatePost: UIView {
     var cityButton: UIButton!
     var cityDropButton: UIButton!
     var stateDropButton: UIButton!
-
+    var saveButton: UIButton!
     var buttonTakePhoto: UIButton!
     var choosePhotoLabel: UILabel!
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
-
+        
         setUpScrollView()
         setUpHeaderlabel()
         setUpEventNameTextField()
@@ -39,24 +39,29 @@ class CreatePost: UIView {
         setUpDescriptionTextField()
         setUpStatePicker()
         setUpCityPicker()
-//        setUpStateAndCityTextField()
+        setUpSaveButton()
         setupbuttonTakePhoto()
         setUpChoosePhoto()
         
         initConstraints()
     }
-
+    
     func setUpScrollView() {
         contentWrapper = UIScrollView()
         contentWrapper.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(contentWrapper)
     }
+    
+    func setUpSaveButton(){
+        saveButton = UIButton(type: .system)
+        saveButton.setTitle("Save", for: .normal)
+    }
 
     func setupbuttonTakePhoto() {
-        buttonTakePhoto = UIButton(type: .system)
+        buttonTakePhoto = UIButton(type: .custom)
         buttonTakePhoto.setTitle("", for: .normal)
         buttonTakePhoto.showsMenuAsPrimaryAction = true
-        buttonTakePhoto.setImage(UIImage(systemName: "photo"), for: .normal)
+        buttonTakePhoto.setImage(UIImage(systemName: "photo")?.withRenderingMode(.alwaysOriginal), for: .normal)
         buttonTakePhoto.contentHorizontalAlignment = .fill
         buttonTakePhoto.contentVerticalAlignment = .fill
         buttonTakePhoto.imageView?.contentMode = .scaleAspectFit
@@ -66,7 +71,7 @@ class CreatePost: UIView {
 
     func setUpHeaderlabel() {
         headerLabel = UILabel()
-        headerLabel.text = "Create a Post"
+        headerLabel.text = "Create an Event"
         headerLabel.font = UIFont.boldSystemFont(ofSize: 24)
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
         contentWrapper.addSubview(headerLabel)
@@ -84,6 +89,10 @@ class CreatePost: UIView {
         eventNameTextField = UITextField()
         eventNameTextField.borderStyle = .roundedRect
         eventNameTextField.layer.borderColor = UIColor.lightGray.cgColor
+        eventNameTextField.layer.borderWidth = 1.0
+        eventNameTextField.layer.cornerRadius = 8.0
+        eventNameTextField.font = UIFont.systemFont(ofSize: 16)
+        eventNameTextField.textColor = .black
         eventNameTextField.placeholder = "Event Name"
         eventNameTextField.autocapitalizationType = .none
         eventNameTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -94,7 +103,12 @@ class CreatePost: UIView {
         locationTextField = UITextField()
         locationTextField.borderStyle = .roundedRect
         locationTextField.layer.borderColor = UIColor.lightGray.cgColor
+        locationTextField.layer.borderWidth = 1.0
+        locationTextField.layer.cornerRadius = 8.0
+        locationTextField.font = UIFont.systemFont(ofSize: 16)
+        locationTextField.textColor = .black
         locationTextField.placeholder = "Where Exactly?"
+        eventNameTextField.autocapitalizationType = .none
         locationTextField.translatesAutoresizingMaskIntoConstraints = false
         contentWrapper.addSubview(locationTextField)
     }
@@ -177,89 +191,72 @@ class CreatePost: UIView {
 
     func initConstraints() {
         NSLayoutConstraint.activate([
+            // Content Wrapper
             contentWrapper.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
             contentWrapper.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             contentWrapper.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
             contentWrapper.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
 
-            headerLabel.topAnchor.constraint(
-                equalTo: contentWrapper.topAnchor, constant: 16),
-            headerLabel.centerXAnchor.constraint(
-                equalTo: contentWrapper.centerXAnchor),
+            // Header Label
+            headerLabel.topAnchor.constraint(equalTo: contentWrapper.topAnchor, constant: 16),
+            headerLabel.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
 
-            eventNameTextField.topAnchor.constraint(
-                equalTo: headerLabel.bottomAnchor, constant: 32),
-            eventNameTextField.leadingAnchor.constraint(
-                equalTo: contentWrapper.leadingAnchor, constant: 20),
-            eventNameTextField.trailingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            eventNameTextField.heightAnchor.constraint(equalToConstant: 44),
+            // Event Name TextField
+            eventNameTextField.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 32),
+            eventNameTextField.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
+            eventNameTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
 
-            locationTextField.topAnchor.constraint(
-                equalTo: eventNameTextField.bottomAnchor, constant: 32),
-            locationTextField.leadingAnchor.constraint(
-                equalTo: contentWrapper.leadingAnchor, constant: 20),
-            locationTextField.trailingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            
-            timePicker.topAnchor.constraint(equalTo: locationTextField.bottomAnchor, constant: 32),
-            timePicker.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
-
-            descriptionTextField.topAnchor.constraint(
-                equalTo: timePicker.bottomAnchor, constant: 32),
-            descriptionTextField.leadingAnchor.constraint(
-                equalTo: contentWrapper.leadingAnchor, constant: 20),
-            descriptionTextField.trailingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            descriptionTextField.heightAnchor.constraint(equalToConstant: 100),
-
-            placeholderLabel.topAnchor.constraint(
-                equalTo: descriptionTextField.topAnchor, constant: 8),
-            placeholderLabel.leadingAnchor.constraint(
-                equalTo: descriptionTextField.leadingAnchor, constant: 5),
+            // Location TextField
+            locationTextField.topAnchor.constraint(equalTo: eventNameTextField.bottomAnchor, constant: 32),
+            locationTextField.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
+            locationTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
 
             // State Button
-            stateButton.topAnchor.constraint(
-                equalTo: descriptionTextField.bottomAnchor, constant: 32),
-            stateButton.centerXAnchor.constraint(
-                equalTo: contentWrapper.centerXAnchor),
+            stateButton.topAnchor.constraint(equalTo: locationTextField.bottomAnchor, constant: 32),
+            stateButton.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
 
             // State Dropdown Button
-            stateDropButton.leadingAnchor.constraint(
-                equalTo: stateButton.trailingAnchor, constant: 8),
+            stateDropButton.leadingAnchor.constraint(equalTo: stateButton.trailingAnchor, constant: 8),
             stateDropButton.centerYAnchor.constraint(equalTo: stateButton.centerYAnchor),
             stateDropButton.widthAnchor.constraint(equalToConstant: 18),
             stateDropButton.heightAnchor.constraint(equalToConstant: 18),
 
             // City Button
-            cityButton.topAnchor.constraint(
-                equalTo: stateButton.bottomAnchor, constant: 16),
-            cityButton.centerXAnchor.constraint(
-                equalTo: contentWrapper.centerXAnchor),
+            cityButton.topAnchor.constraint(equalTo: stateButton.bottomAnchor, constant: 16),
+            cityButton.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
 
             // City Dropdown Button
-            cityDropButton.leadingAnchor.constraint(
-                equalTo: cityButton.trailingAnchor, constant: 8),
+            cityDropButton.leadingAnchor.constraint(equalTo: cityButton.trailingAnchor, constant: 8),
             cityDropButton.centerYAnchor.constraint(equalTo: cityButton.centerYAnchor),
             cityDropButton.widthAnchor.constraint(equalToConstant: 18),
             cityDropButton.heightAnchor.constraint(equalToConstant: 18),
 
-            buttonTakePhoto.topAnchor.constraint(
-                equalTo: cityButton.bottomAnchor, constant: 32),
-            buttonTakePhoto.centerXAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            // Description TextField
+            descriptionTextField.topAnchor.constraint(equalTo: cityButton.bottomAnchor, constant: 32),
+            descriptionTextField.leadingAnchor.constraint(equalTo: contentWrapper.leadingAnchor, constant: 20),
+            descriptionTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            descriptionTextField.heightAnchor.constraint(equalToConstant: 100),
+
+            // Placeholder Label
+            placeholderLabel.topAnchor.constraint(equalTo: descriptionTextField.topAnchor, constant: 8),
+            placeholderLabel.leadingAnchor.constraint(equalTo: descriptionTextField.leadingAnchor, constant: 5),
+
+            // Time Picker
+            timePicker.topAnchor.constraint(equalTo: descriptionTextField.bottomAnchor, constant: 32),
+            timePicker.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
+
+            // Take Photo Button
+            buttonTakePhoto.topAnchor.constraint(equalTo: timePicker.bottomAnchor, constant: 32),
+            buttonTakePhoto.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             buttonTakePhoto.widthAnchor.constraint(equalToConstant: 150),
             buttonTakePhoto.heightAnchor.constraint(equalToConstant: 150),
 
-            choosePhotoLabel.topAnchor.constraint(
-                equalTo: buttonTakePhoto.bottomAnchor, constant: 16),
-            choosePhotoLabel.centerXAnchor.constraint(
-                equalTo: contentWrapper.centerXAnchor),
+            // Choose Photo Label
+            choosePhotoLabel.topAnchor.constraint(equalTo: buttonTakePhoto.bottomAnchor, constant: 16),
+            choosePhotoLabel.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
             choosePhotoLabel.bottomAnchor.constraint(equalTo: contentWrapper.bottomAnchor, constant: -20)
         ])
     }
-
-
 
 
     required init?(coder: NSCoder) {

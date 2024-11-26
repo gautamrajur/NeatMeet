@@ -22,8 +22,34 @@ class ShowPostViewController: UIViewController {
         super.viewDidLoad()
         fetchEventAndDisplay(eventId: eventId)
         showPost.likeButton.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
+        setUpEditButton()
+        addEditNotiifcationObservor()
+    }
+    
+    func addEditNotiifcationObservor() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(refreshScreen(notification:)),
+            name: .contentEdited, object: nil)
+    }
+  
+    @objc func refreshScreen(notification: Notification) {
+        fetchEventAndDisplay(eventId: eventId)
     }
 
+    
+    func setUpEditButton() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self,action: #selector(onEditBarButtonTapped))
+    }
+    
+    
+    @objc func onEditBarButtonTapped() {
+        let createPostVC = CreatePostViewController()
+        createPostVC.isEditingPost = true
+        createPostVC.eventId = eventId
+        navigationController?.pushViewController(createPostVC, animated: true)
+    }
+    
+    
     @objc func didTapLikeButton() {
         incrementLikeCount(eventId: eventId) { [weak self] in
             self?.fetchLatestLikeCount(eventId: self?.eventId ?? "")
@@ -38,10 +64,11 @@ class ShowPostViewController: UIViewController {
             "likesCount": FieldValue.increment(Int64(1))
         ]) { error in
             if let error = error {
-                print("Error incrementing like count: \(error.localizedDescription)")
+                print("Error incrementing like count")
             } else {
                 print("Like count incremented successfully!")
-                completion() 
+                NotificationCenter.default.post(name: .likeUpdated, object: nil)
+                completion()
             }
         }
     }

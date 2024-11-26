@@ -29,6 +29,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        addEditNotiifcationObservor()
         profileScreen.editButton.menu = getMenuImagePicker()
         displayAllEvents()
         displayUserDetails()
@@ -300,5 +301,15 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         navigationController?.pushViewController(
             showPostViewController, animated: true)
     }
+    
+    func addEditNotiifcationObservor() {
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(displayAllEvents),
+            name: .contentEdited, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(displayAllEvents),
+            name: .likeUpdated, object: nil)
+    }
+    
 
 }
