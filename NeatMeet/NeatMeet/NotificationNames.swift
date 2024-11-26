@@ -16,4 +16,5 @@ extension Notification.Name {
     static let selectCityCreatePost = Notification.Name("selectCityInCreatePost")
     static let contentEdited = Notification.Name("contentEdited")
     static let likeUpdated = Notification.Name("likeUpdated")
+    static let newEventAdded = Notification.Name("newEventAdded")
 }

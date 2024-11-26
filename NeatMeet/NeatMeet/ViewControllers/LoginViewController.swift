@@ -22,7 +22,6 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "NeatMeet"
         self.navigationItem.hidesBackButton = true
         
         self.view.backgroundColor = .white

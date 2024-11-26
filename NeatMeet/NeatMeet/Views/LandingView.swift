@@ -17,6 +17,7 @@ class LandingView: UIView {
     var stateDropButton: UIButton!
     var eventTableView: UITableView!
     var addButton: UIButton!
+    let refreshControl = UIRefreshControl()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -91,6 +92,7 @@ class LandingView: UIView {
         eventTableView.register(
             EventTableViewCell.self, forCellReuseIdentifier: "events")
         eventTableView.translatesAutoresizingMaskIntoConstraints = false
+        eventTableView.refreshControl = refreshControl
         addSubview(eventTableView)
     }
 

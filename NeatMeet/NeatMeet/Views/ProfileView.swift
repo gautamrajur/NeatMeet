@@ -9,7 +9,7 @@ import UIKit
 class ProfileView: UIView {
 
     var textFieldName: UITextField!
-    var textFieldEmail: UITextField!
+    var textFieldEmail: UILabel!
     var buttonSave: UIButton!
     var imageContacts: UIImageView!
     var editButtonFrame: UIView!
@@ -74,17 +74,20 @@ class ProfileView: UIView {
 
     func setUpButtonSave() {
         buttonSave = UIButton(type: .system)
-        buttonSave.setTitle("Save", for: .normal)
-        buttonSave.setTitleColor(.black, for: .normal)
-        buttonSave.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        buttonSave.layer.borderColor = UIColor.black.cgColor
-        buttonSave.backgroundColor = .lightGray
-        buttonSave.layer.borderWidth = 1.0
-        buttonSave.layer.cornerRadius = 10.0
-        buttonSave.clipsToBounds = true
-        buttonSave.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(buttonSave)
+           buttonSave.setTitle("Save", for: .normal)
+           buttonSave.setTitleColor(.white, for: .normal)
+           buttonSave.backgroundColor = UIColor.systemBlue
+           buttonSave.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+           buttonSave.layer.cornerRadius = 8.0
+           buttonSave.clipsToBounds = true
+           buttonSave.translatesAutoresizingMaskIntoConstraints = false
+           buttonSave.layer.shadowColor = UIColor.black.cgColor
+           buttonSave.layer.shadowOpacity = 0.1
+           buttonSave.layer.shadowOffset = CGSize(width: 0, height: 2)
+           buttonSave.layer.shadowRadius = 4
+           self.addSubview(buttonSave)
     }
+    
 
     func setupFieldName() {
         textFieldName = UITextField()
@@ -96,11 +99,8 @@ class ProfileView: UIView {
     }
 
     func setupFieldEmail() {
-        textFieldEmail = UITextField()
-        textFieldEmail.placeholder = "Email"
-        textFieldEmail.borderStyle = .roundedRect
+        textFieldEmail = UILabel()
         textFieldEmail.font = UIFont.systemFont(ofSize: 16)
-        textFieldEmail.keyboardType = .emailAddress
         textFieldEmail.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldEmail)
     }
@@ -132,18 +132,18 @@ class ProfileView: UIView {
             editButton.heightAnchor.constraint(equalToConstant: 18),
             editButton.widthAnchor.constraint(equalToConstant: 24),
 
-            textFieldName.topAnchor.constraint(equalTo: imageContacts.topAnchor),
-            textFieldName.leadingAnchor.constraint(equalTo: imageContacts.trailingAnchor, constant: 10),
-            textFieldName.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
-            textFieldName.heightAnchor.constraint(equalToConstant: 30),
-
-            textFieldEmail.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 8),
+            textFieldEmail.topAnchor.constraint(equalTo: imageContacts.topAnchor),
             textFieldEmail.leadingAnchor.constraint(equalTo: imageContacts.trailingAnchor, constant: 10),
             textFieldEmail.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
             textFieldEmail.heightAnchor.constraint(equalToConstant: 30),
 
+            textFieldName.topAnchor.constraint(equalTo: textFieldEmail.bottomAnchor, constant: 8),
+            textFieldName.leadingAnchor.constraint(equalTo: imageContacts.trailingAnchor, constant: 10),
+            textFieldName.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+            textFieldName.heightAnchor.constraint(equalToConstant: 30),
+
             buttonSave.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            buttonSave.topAnchor.constraint(equalTo: textFieldEmail.bottomAnchor, constant: 10),
+            buttonSave.topAnchor.constraint(equalTo: textFieldName.bottomAnchor, constant: 10),
             buttonSave.heightAnchor.constraint(equalToConstant: 20),
             buttonSave.widthAnchor.constraint(equalToConstant: 70),
             
