@@ -40,7 +40,7 @@ class CreatePostViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         if isEditingPost, let eventId = eventId {
-            createPost.headerLabel.text = "Update a Post"
+            createPost.headerLabel.text = "Update Event"
             self.createPost.placeholderLabel.isHidden = true
             fetchEventDetails(for: eventId)
         }
