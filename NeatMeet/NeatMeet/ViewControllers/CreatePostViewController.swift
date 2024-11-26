@@ -254,14 +254,13 @@ class CreatePostViewController: UIViewController {
         createPost.cityButton.setTitle(selectedCity.name, for: .normal)
     }
     
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+    func showAlert(title: String, message: String, completion: @escaping () -> Void) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            completion()
+        }
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func onTapPost() {
@@ -270,7 +269,7 @@ class CreatePostViewController: UIViewController {
         guard let eName = createPost.eventNameTextField.text, !eName.isEmpty,
               let eLocation = createPost.locationTextField.text, !eLocation.isEmpty,
               let eDetails = createPost.descriptionTextField.text, !eDetails.isEmpty else {
-            showAlert(title: "Missing Information", message: "Please fill all required fields.")
+            showAlert(title: "Missing Information", message: "Please fill all required fields."){}
                return
         }
         let eDateTime = createPost.timePicker.date
@@ -351,8 +350,9 @@ class CreatePostViewController: UIViewController {
                          let documentID = docRef.documentID
                     
                          self.showPost.eventId = documentID
-                         
-                         self.navigationController?.pushViewController(self.showPost, animated: true)
+                         self.showAlert(title: "Hurray!", message: "Event created SUCESSFULLY !") {
+                             self.navigationController?.popViewController(animated: true)
+                         }
                      }
                  }
             } catch {
