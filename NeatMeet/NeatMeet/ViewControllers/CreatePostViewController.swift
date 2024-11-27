@@ -51,7 +51,10 @@ class CreatePostViewController: UIViewController {
         createPost.buttonTakePhoto.menu = getMenuImagePicker()
         addSaveButton()
         configureButtonActions()
-        requestLocation()
+        if(!isEditingPost) {
+            requestLocation()
+        }
+        
 
     }
 
@@ -60,7 +63,7 @@ class CreatePostViewController: UIViewController {
         db.collection("events").document(eventId).getDocument {
             [weak self] document, error in
             if let error = error {
-                print("Error fetching event: \(error.localizedDescription)")
+                print("Error fetching event")
                 return
             }
 
@@ -71,13 +74,12 @@ class CreatePostViewController: UIViewController {
                 return
             }
 
-            DispatchQueue.main.async {
-                self?.populateFields(with: event)
-            }
+            self?.populateFields(event: event)
+            
         }
     }
 
-    private func populateFields(with event: Event) {
+    private func populateFields(event: Event) {
         eventDetails = event
         createPost.eventNameTextField.text = event.name
         createPost.locationTextField.text = event.address
