@@ -27,7 +27,7 @@ class CreatePostViewController: UIViewController {
     var statesList: [State] = []
     var selectedState: State = State(name: "", isoCode: "")
     var selectedCity: City = City(name: "", stateCode: "")
-    
+    var eventDetails: Event?
     var eventId: String?
     var isEditingPost: Bool = false
     
@@ -77,6 +77,7 @@ class CreatePostViewController: UIViewController {
     }
 
     private func populateFields(with event: Event) {
+        eventDetails = event
         createPost.eventNameTextField.text = event.name
         createPost.locationTextField.text = event.address
         createPost.descriptionTextField.text = event.eventDescription
@@ -277,23 +278,26 @@ class CreatePostViewController: UIViewController {
         let ePhoto = createPost.buttonTakePhoto.imageView?.image
         
         // Need to upload the image to Firebase Storage and retrieve the URL for it to populate in the db
-        var imageUrl: String? = nil
-        if let image = ePhoto, let imageData = image.jpegData(compressionQuality: 0.8) {
-            // Upload image to Firebase Storage
-            let imageRef = Storage.storage().reference().child("eventImages/\(UUID().uuidString).jpg")
-            
-            imageRef.putData(imageData, completion: {(url, error) in
-                if error == nil {
-                    imageRef.downloadURL(completion: {(url, error) in
-                        if error == nil {
-                            imageUrl = url?.absoluteString
-                            self.postEventToFirestore(eventName: eName, location: eLocation, description: eDetails, eventDate: eDateTime, imageUrl: imageUrl, eDetails: eDetails)
-                        }
-                    })
-                }
-            })
+        if(ePhoto != UIImage(named: "event_placeholder")){
+            var imageUrl: String? = nil
+            if let image = ePhoto, let imageData = image.jpegData(compressionQuality: 0.8) {
+                // Upload image to Firebase Storage
+                let imageRef = Storage.storage().reference().child("eventImages/\(UUID().uuidString).jpg")
+                
+                imageRef.putData(imageData, completion: {(url, error) in
+                    if error == nil {
+                        imageRef.downloadURL(completion: {(url, error) in
+                            if error == nil {
+                                imageUrl = url?.absoluteString
+                                self.postEventToFirestore(eventName: eName, location: eLocation, description: eDetails, eventDate: eDateTime, imageUrl: imageUrl, eDetails: eDetails)
+                            }
+                        })
+                    }
+                })
+            }
+        } else {
+            self.postEventToFirestore(eventName: eName, location: eLocation, description: eDetails, eventDate: eDateTime, imageUrl: "", eDetails: eDetails)
         }
-
     }
     
     func postEventToFirestore(eventName: String, location: String, description: String, eventDate: Date, imageUrl: String?, eDetails: String) {
