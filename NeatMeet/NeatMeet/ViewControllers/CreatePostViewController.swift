@@ -45,14 +45,21 @@ class CreatePostViewController: UIViewController {
             self.createPost.placeholderLabel.isHidden = true
             fetchEventDetails(for: eventId)
         }
-
+        
+        addSaveButton()
         hideKeyboardOnTapOutside()
         addNotificationCenter()
         createPost.buttonTakePhoto.menu = getMenuImagePicker()
-        addSaveButton()
         configureButtonActions()
         requestLocation()
+    }
 
+    private func addSaveButton() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .save,
+            target: self,
+            action: #selector(onTapPost)
+        )
     }
 
     private func fetchEventDetails(for eventId: String) {
@@ -178,13 +185,6 @@ class CreatePostViewController: UIViewController {
         }
     }
 
-    func addSaveButton() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            customView: createPost.saveButton)
-        createPost.saveButton.addTarget(
-            self, action: #selector(onTapPost), for: .touchUpInside)
-    }
-
     private func configureButtonActions() {
         createPost.stateButton.addTarget(
             self, action: #selector(stateButtonTapped), for: .touchUpInside)
@@ -266,30 +266,41 @@ class CreatePostViewController: UIViewController {
         selectedCity = city
         createPost.cityButton.setTitle(selectedCity.name, for: .normal)
     }
-    
-    func showAlert(title: String, message: String, completion: @escaping () -> Void) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+    func showAlert(
+        title: String, message: String, completion: @escaping () -> Void
+    ) {
+        let alertController = UIAlertController(
+            title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
             completion()
         }
         alertController.addAction(okAction)
         self.present(alertController, animated: true, completion: nil)
     }
-    
+
     @objc func onTapPost() {
         // push to next screen.
         // set all the second screen variables
         guard let eName = createPost.eventNameTextField.text, !eName.isEmpty,
-              let eLocation = createPost.locationTextField.text, !eLocation.isEmpty,
-              let eDetails = createPost.descriptionTextField.text, !eDetails.isEmpty else {
-            showAlert(title: "Missing Information", message: "Please fill all required fields."){}
-               return
+            let eLocation = createPost.locationTextField.text,
+            !eLocation.isEmpty,
+            let eDetails = createPost.descriptionTextField.text,
+            !eDetails.isEmpty
+        else {
+            showAlert(
+                title: "Missing Information",
+                message: "Please fill all required fields."
+            ) {}
+            return
         }
         let eDateTime = createPost.timePicker.date
         let ePhoto = createPost.buttonTakePhoto.imageView?.image
 
         // Need to upload the image to Firebase Storage and retrieve the URL for it to populate in the db
-        if ePhoto != UIImage(named: "event_placeholder") && previousImage != ePhoto{
+        if ePhoto != UIImage(named: "event_placeholder")
+            && previousImage != ePhoto
+        {
             var imageUrl: String? = nil
             if let image = ePhoto,
                 let imageData = image.jpegData(compressionQuality: 0.8)
@@ -318,7 +329,8 @@ class CreatePostViewController: UIViewController {
         } else {
             self.postEventToFirestore(
                 eventName: eName, location: eLocation, description: eDetails,
-                eventDate: eDateTime, imageUrl: eventDetails?.imageUrl, eDetails: eDetails)
+                eventDate: eDateTime, imageUrl: eventDetails?.imageUrl,
+                eDetails: eDetails)
         }
     }
 
@@ -349,17 +361,21 @@ class CreatePostViewController: UIViewController {
         if isEditingPost, let eventId = eventId {
             // Update existing event
             do {
-                try db.collection("events").document(eventId).setData(from: event) { error in
+                try db.collection("events").document(eventId).setData(
+                    from: event
+                ) { error in
                     if error != nil {
                         print("Error updating event to Firestore")
                     } else {
                         print("Event successfully updated in Firestore!")
-                        
+
                         // Remove eventId from the likes collections of all users
                         self.removeEventFromUserLikes(eventId: eventId) {
                             self.showPost.eventId = eventId
-                            NotificationCenter.default.post(name: .contentEdited, object: nil)
-                            self.navigationController?.popViewController(animated: true)
+                            NotificationCenter.default.post(
+                                name: .contentEdited, object: nil)
+                            self.navigationController?.popViewController(
+                                animated: true)
                         }
                     }
                 }
@@ -367,37 +383,41 @@ class CreatePostViewController: UIViewController {
             } catch {
                 print("Failed to update event")
             }
-        }
-        else {
-            
+        } else {
+
             // Add the event to Firestore under the "events" collection
             do {
                 let docRef = db.collection("events").document()
                 try docRef.setData(from: event) { error in
-                     if error != nil {
-                         print("Error adding event to Firestore")
-                     } else {
-                         print("Event successfully added to Firestore!")
-                         // Navigate to the Show Post Page
-                         let documentID = docRef.documentID
-                    
-                         self.showPost.eventId = documentID
-                         self.showAlert(title: "Hurray!", message: "Event created SUCESSFULLY !") {
-                             self.navigationController?.popViewController(animated: true)
-                         }
-                     }
-                 }
+                    if error != nil {
+                        print("Error adding event to Firestore")
+                    } else {
+                        print("Event successfully added to Firestore!")
+                        // Navigate to the Show Post Page
+                        let documentID = docRef.documentID
+
+                        self.showPost.eventId = documentID
+                        self.showAlert(
+                            title: "Hurray!",
+                            message: "Event created SUCESSFULLY !"
+                        ) {
+                            self.navigationController?.popViewController(
+                                animated: true)
+                        }
+                    }
+                }
             } catch {
                 print("Error adding document!")
             }
         }
-  
+
     }
-    
-    
-    func removeEventFromUserLikes(eventId: String, completion: @escaping () -> Void) {
+
+    func removeEventFromUserLikes(
+        eventId: String, completion: @escaping () -> Void
+    ) {
         let db = Firestore.firestore()
-        
+
         // Query all users
         db.collection("users").getDocuments { (querySnapshot, error) in
             if let error = error {
@@ -405,53 +425,59 @@ class CreatePostViewController: UIViewController {
                 completion()
                 return
             }
-            
+
             guard let documents = querySnapshot?.documents else {
                 print("No users found.")
                 completion()
                 return
             }
-            
+
             let group = DispatchGroup()
-            
+
             for document in documents {
                 let userId = document.documentID
-                let likesRef = db.collection("users").document(userId).collection("likes").document(eventId)
-                
+                let likesRef = db.collection("users").document(userId)
+                    .collection("likes").document(eventId)
+
                 group.enter()
                 // Delete the eventId from the user's likes collection
                 likesRef.delete { error in
                     if let error = error {
                         print("Error removing eventId from user \(userId)")
                     } else {
-                        print("Removed eventId from user \(userId)'s likes collection.")
+                        print(
+                            "Removed eventId from user \(userId)'s likes collection."
+                        )
                     }
                     group.leave()
                 }
             }
-            
+
             group.notify(queue: .main) {
                 print("EventId removal from all likes collections complete.")
                 completion()
             }
         }
     }
-    
-    
-     func getMenuImagePicker() -> UIMenu{
-         let menuItems = [
-             UIAction(title: "Camera",handler: {(_) in
-                 self.pickUsingCamera()
-             }),
-             UIAction(title: "Gallery",handler: {(_) in
-                 self.pickPhotoFromGallery()
-             })
-         ]
-         
-         return UIMenu(title: "Select source", children: menuItems)
-     }
-    
-    func pickUsingCamera(){
+
+    func getMenuImagePicker() -> UIMenu {
+        let menuItems = [
+            UIAction(
+                title: "Camera",
+                handler: { (_) in
+                    self.pickUsingCamera()
+                }),
+            UIAction(
+                title: "Gallery",
+                handler: { (_) in
+                    self.pickPhotoFromGallery()
+                }),
+        ]
+
+        return UIMenu(title: "Select source", children: menuItems)
+    }
+
+    func pickUsingCamera() {
         let cameraController = UIImagePickerController()
         cameraController.sourceType = .camera
         cameraController.allowsEditing = true
