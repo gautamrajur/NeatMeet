@@ -398,8 +398,7 @@ class CreatePostViewController: UIViewController {
     func removeEventFromUserLikes(eventId: String, completion: @escaping () -> Void) {
         let db = Firestore.firestore()
         
-        // Query all users
-        db.collection("users").getDocuments { (querySnapshot, error) in
+        db.collection("users").getDocuments { querySnapshot, error in
             if let error = error {
                 print("Error fetching users: \(error.localizedDescription)")
                 completion()
@@ -412,30 +411,43 @@ class CreatePostViewController: UIViewController {
                 return
             }
             
-            let group = DispatchGroup()
+            let totalUsers = documents.count
+            var processedUsers = 0
             
             for document in documents {
                 let userId = document.documentID
                 let likesRef = db.collection("users").document(userId).collection("likes").document(eventId)
                 
-                group.enter()
-                // Delete the eventId from the user's likes collection
-                likesRef.delete { error in
+                // Check if the eventId exists in the likes collection
+                likesRef.getDocument { documentSnapshot, error in
                     if let error = error {
-                        print("Error removing eventId from user \(userId)")
-                    } else {
-                        print("Removed eventId from user \(userId)'s likes collection.")
+                        print("Error checking eventId for user \(userId): \(error.localizedDescription)")
+                    } else if documentSnapshot?.exists == true {
+                        // Proceed to delete the document if it exists
+                        likesRef.delete { error in
+                            if let error = error {
+                                print("Error removing eventId from user \(userId): \(error.localizedDescription)")
+                            } else {
+                                print("Removed eventId from user \(userId)'s likes collection.")
+                            }
+                        }
                     }
-                    group.leave()
+                    
+                    processedUsers += 1
+                    
+                    if processedUsers == totalUsers {
+                        print("EventId removal from all likes collections complete.")
+                        completion()
+                    }
                 }
             }
             
-            group.notify(queue: .main) {
-                print("EventId removal from all likes collections complete.")
+            if totalUsers == 0 {
                 completion()
             }
         }
     }
+
     
     
      func getMenuImagePicker() -> UIMenu{
