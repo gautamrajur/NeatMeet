@@ -146,7 +146,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                 eventDescription: eDetails
                             )
                             events.append(event)
-                            events.sort { $0.eventDate > $1.eventDate }
+                            events.sort { $0.datePublished > $1.datePublished }
                             self.profileScreen.eventTableView.reloadData()
                         }
                     }
@@ -284,7 +284,10 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         cell.eventNameLabel?.text = event.name
         cell.eventLocationLabel?.text = event.address
-        cell.eventDateTimeLabel?.text = event.eventDate.description
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d, HH:mm"
+        cell.eventDateTimeLabel?.text = dateFormatter.string(
+                    from: event.eventDate)
         cell.eventLikeLabel?.text = (String)(event.likesCount)
         if let imageUrl = URL(string: event.imageUrl) {
             cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_ph_square"))
