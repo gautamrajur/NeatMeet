@@ -148,8 +148,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                                     eventDescription: eDetails
                                 )
                             )
+                            events.sort { $1.eventDate > $0.eventDate }
                             self.profileScreen.eventTableView.reloadData()
-                            events.sort { $0.datePublished > $1.datePublished }
                             
                         }
                     }
