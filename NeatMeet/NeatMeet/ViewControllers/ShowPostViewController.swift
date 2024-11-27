@@ -47,6 +47,8 @@ class ShowPostViewController: UIViewController {
             target: self,
             action: #selector(onEditBarButtonTapped)
         )
+        navigationItem.rightBarButtonItem?.isEnabled = false
+
     }
 
     @objc func onEditBarButtonTapped() {
@@ -161,6 +163,13 @@ class ShowPostViewController: UIViewController {
                 DispatchQueue.main.async {
                     self?.showPost.configureWithEvent(event: event)
                     self?.showPost.updateLikeCountLabel(count: event.likesCount)
+                    
+                    if let currentUserId = Auth.auth().currentUser?.uid,
+                      currentUserId == event.publishedBy {
+                       self?.navigationItem.rightBarButtonItem?.isEnabled = true
+                   } else {
+                       self?.navigationItem.rightBarButtonItem?.isEnabled = false
+                   }
                 }
             } catch {
                 print("Error decoding event data: \(error.localizedDescription)")
