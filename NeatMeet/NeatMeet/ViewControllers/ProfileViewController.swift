@@ -132,22 +132,25 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                            let eventDate = data["eventDate"] as? Timestamp,
                            let eDetails = data["eventDescription"] as? String
                         {
-                            let event = Event(
-                                id: document.documentID,
-                                name: name,
-                                likesCount: likesCount,
-                                datePublished: datePublished.dateValue(),
-                                publishedBy: publishedBy,
-                                address: address,
-                                city: city,
-                                state: state,
-                                imageUrl: imageUrl,
-                                eventDate: eventDate.dateValue(),
-                                eventDescription: eDetails
+                            
+                            events.append(
+                                Event(
+                                    id: document.documentID,
+                                    name: name,
+                                    likesCount: likesCount,
+                                    datePublished: datePublished.dateValue(),
+                                    publishedBy: publishedBy,
+                                    address: address,
+                                    city: city,
+                                    state: state,
+                                    imageUrl: imageUrl,
+                                    eventDate: eventDate.dateValue(),
+                                    eventDescription: eDetails
+                                )
                             )
-                            events.append(event)
-                            events.sort { $0.datePublished > $1.datePublished }
                             self.profileScreen.eventTableView.reloadData()
+                            events.sort { $0.datePublished > $1.datePublished }
+                            
                         }
                     }
                 }
