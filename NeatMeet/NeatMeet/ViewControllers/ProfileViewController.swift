@@ -19,7 +19,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     var events: [Event] = []
     let db = Firestore.firestore()
     let storage = Storage.storage()
-
+    var refreshTimer: Timer?
     
     override func loadView() {
         view=profileScreen

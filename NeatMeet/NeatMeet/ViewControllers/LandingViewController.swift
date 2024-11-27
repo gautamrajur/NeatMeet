@@ -22,7 +22,8 @@ class LandingViewController: UIViewController {
     let locationAPI = LocationAPI()
     var citiesList: [City] = []
     var statesList: [State] = []
-
+    var refreshTimer: Timer?
+    
     override func loadView() {
         view = landingView
     }
@@ -386,17 +387,12 @@ class LandingViewController: UIViewController {
     
     func addEditNotiifcationObservor() {
         NotificationCenter.default.addObserver(
-            self, selector: #selector(refreshScreen(notification:)),
+            self, selector: #selector(fetchEvents(notification:)),
             name: .contentEdited, object: nil)
         NotificationCenter.default.addObserver(
-            self, selector: #selector(refreshScreen(notification:)),
+            self, selector: #selector(fetchEvents(notification:)),
             name: .likeUpdated, object: nil)
     }
+
     
-    @objc func refreshScreen(notification: Notification) {
-        // Add code to refresh the event table.
-        Task {
-            await self.getAllEvents()
-        }
-    }
 }

@@ -17,7 +17,7 @@ class CreatePost: UIView {
     var descriptionTextField: UITextView!
     var stateCityTextField: UITextField!
     var placeholderLabel: UILabel!
-    
+    var activityIndicator: UIActivityIndicatorView!
     
     var stateButton: UIButton!
     var cityButton: UIButton!
@@ -42,6 +42,7 @@ class CreatePost: UIView {
         setUpSaveButton()
         setupbuttonTakePhoto()
         setUpChoosePhoto()
+        setUpActivityIndicator()
         
         initConstraints()
     }
@@ -55,6 +56,14 @@ class CreatePost: UIView {
     func setUpSaveButton(){
         saveButton = UIButton(type: .system)
         saveButton.setTitle("Save", for: .normal)
+    }
+    
+    
+    func setUpActivityIndicator() {
+        activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        contentWrapper.addSubview(activityIndicator)
     }
 
     func setupbuttonTakePhoto() {
@@ -120,7 +129,7 @@ class CreatePost: UIView {
         timePicker.preferredDatePickerStyle = .compact // Use wheels for a classic look
         timePicker.translatesAutoresizingMaskIntoConstraints = false
         
-        // Optional: Set locale or 24-hour format
+        timePicker.minimumDate = Date()
         timePicker.locale = Locale(identifier: "en_US") // Adjust for desired locale
         timePicker.calendar = Calendar.current
         timePicker.minuteInterval = 1 // Set minute intervals (e.g., 1, 5, 15)
@@ -250,6 +259,9 @@ class CreatePost: UIView {
             buttonTakePhoto.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             buttonTakePhoto.widthAnchor.constraint(equalToConstant: 150),
             buttonTakePhoto.heightAnchor.constraint(equalToConstant: 150),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: contentWrapper.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: contentWrapper.centerYAnchor, constant: 30),
 
             // Choose Photo Label
             choosePhotoLabel.topAnchor.constraint(equalTo: buttonTakePhoto.bottomAnchor, constant: 16),
