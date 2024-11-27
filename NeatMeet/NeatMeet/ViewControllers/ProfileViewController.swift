@@ -287,7 +287,9 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         cell.eventDateTimeLabel?.text = event.eventDate.description
         cell.eventLikeLabel?.text = (String)(event.likesCount)
         if let imageUrl = URL(string: event.imageUrl) {
-            cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_placeholder"))
+            cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_ph_square"))
+        } else {
+            cell.eventImageView.image = UIImage(named: "event_ph_square")
         }
         return cell
     }
