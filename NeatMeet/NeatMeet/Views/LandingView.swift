@@ -15,6 +15,7 @@ class LandingView: UIView {
     var cityButton: UIButton!
     var cityDropButton: UIButton!
     var stateDropButton: UIButton!
+    var noEventText: UILabel!
     var eventTableView: UITableView!
     var addButton: UIButton!
     let refreshControl = UIRefreshControl()
@@ -28,8 +29,9 @@ class LandingView: UIView {
         setUpStatePicker()
         setUpCityPicker()
         setUpEventTableView()
+        setUpNoEventText()
         setUpAddButton()
-        
+
         initConstraints()
     }
 
@@ -93,7 +95,17 @@ class LandingView: UIView {
             EventTableViewCell.self, forCellReuseIdentifier: "events")
         eventTableView.translatesAutoresizingMaskIntoConstraints = false
         eventTableView.refreshControl = refreshControl
+        eventTableView.backgroundColor = .clear
         addSubview(eventTableView)
+    }
+    
+    private func setUpNoEventText() {
+        noEventText = UILabel()
+        noEventText.text = "No Events"
+        noEventText.font = UIFont(name: "AvenirNext-Regular", size: 24)
+        noEventText.textColor = .lightGray
+        noEventText.translatesAutoresizingMaskIntoConstraints = false
+        insertSubview(noEventText, belowSubview: eventTableView)
     }
 
     private func setUpAddButton() {
@@ -158,6 +170,11 @@ class LandingView: UIView {
                 equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8),
             eventTableView.trailingAnchor.constraint(
                 equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+
+            noEventText.centerXAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            noEventText.centerYAnchor.constraint(
+                equalTo: self.safeAreaLayoutGuide.centerYAnchor),
 
             addButton.trailingAnchor.constraint(
                 equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -16),

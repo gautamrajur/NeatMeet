@@ -238,11 +238,16 @@ class LandingViewController: UIViewController {
                 }
             }
             displayedEvents = events
+            updateNoEventTextVisibility(isEmpty: displayedEvents.isEmpty)
             landingView.eventTableView.reloadData()
 
         } catch {
             print("Error getting documents: \(error)")
         }
+    }
+    
+    func updateNoEventTextVisibility(isEmpty: Bool) {
+        landingView.noEventText.isHidden = !isEmpty
     }
 
     @objc func fetchEvents(notification: Notification) {
