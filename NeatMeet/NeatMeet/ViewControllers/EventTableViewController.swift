@@ -5,8 +5,8 @@
 //  Created by Damyant Jain on 10/30/24.
 //
 
-import UIKit
 import SDWebImage
+import UIKit
 
 extension LandingViewController: UITableViewDelegate, UITableViewDataSource {
 
@@ -15,24 +15,31 @@ extension LandingViewController: UITableViewDelegate, UITableViewDataSource {
     {
         return displayedEvents.count
     }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
+        -> UITableViewCell
+    {
         let cell =
             tableView.dequeueReusableCell(
                 withIdentifier: "events", for: indexPath)
             as! EventTableViewCell
         let event = displayedEvents[indexPath.row]
-        
+
         cell.selectionStyle = .none
         cell.eventNameLabel?.text = event.name
         cell.eventLocationLabel?.text = event.address
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d, HH:mm"
-        cell.eventDateTimeLabel?.text = dateFormatter.string(from: event.eventDate)
+        cell.eventDateTimeLabel?.text = dateFormatter.string(
+            from: event.eventDate)
         cell.eventLikeLabel?.text = "\(event.likesCount)"
         if let imageUrl = URL(string: event.imageUrl) {
-            cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_placeholder"))
+            cell.eventImageView.sd_setImage(
+                with: imageUrl,
+                placeholderImage: UIImage(named: "event_ph_square"))
+        } else {
+            cell.eventImageView.image = UIImage(named: "event_ph_square")
         }
         return cell
     }

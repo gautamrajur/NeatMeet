@@ -70,7 +70,7 @@ class CreatePost: UIView {
         buttonTakePhoto = UIButton(type: .custom)
         buttonTakePhoto.setTitle("", for: .normal)
         buttonTakePhoto.showsMenuAsPrimaryAction = true
-        buttonTakePhoto.setImage(UIImage(systemName: "photo")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        buttonTakePhoto.setImage(UIImage(named: "event_placeholder"), for: .normal)
         buttonTakePhoto.contentHorizontalAlignment = .fill
         buttonTakePhoto.contentVerticalAlignment = .fill
         buttonTakePhoto.imageView?.contentMode = .scaleAspectFit

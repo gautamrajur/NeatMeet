@@ -166,13 +166,12 @@ class ShowPostView: UIView {
     }
     
     private func loadImage(from url: String) {
-        guard let imageUrl = URL(string: url) else { return }
-        DispatchQueue.global().async {
-            if let data = try? Data(contentsOf: imageUrl), let image = UIImage(data: data) {
-                DispatchQueue.main.async {
-                    self.eventImageView.image = image
-                }
-            }
+        if let imageUrl = URL(string: url) {
+            self.eventImageView.sd_setImage(
+                with: imageUrl,
+                placeholderImage: UIImage(named: "event_placeholder"))
+        } else {
+            self.eventImageView.image = UIImage(named: "event_placeholder")
         }
     }
     
