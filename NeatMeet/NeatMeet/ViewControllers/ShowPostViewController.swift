@@ -98,8 +98,6 @@ class ShowPostViewController: UIViewController {
         userLikesRef.document(eventId).setData([:]) { error in
             if let error = error {
                 print("Error recording user like")
-            } else {
-                print("User like recorded successfully!")
             }
         }
     }
@@ -114,7 +112,6 @@ class ShowPostViewController: UIViewController {
             if let error = error {
                 print("Error incrementing like count: \(error.localizedDescription)")
             } else {
-                print("Like count incremented successfully!")
                 NotificationCenter.default.post(name: .likeUpdated, object: nil)
                 completion()
             }

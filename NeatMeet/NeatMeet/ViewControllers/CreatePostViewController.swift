@@ -89,7 +89,6 @@ class CreatePostViewController: UIViewController {
 
         createPost.stateButton.setTitle(selectedState.name, for: .normal)
         createPost.cityButton.setTitle(selectedCity.name, for: .normal)
-        print("This is String: \(event.imageUrl)")
         if !event.imageUrl.isEmpty {
             loadImage(from: event.imageUrl)
         }

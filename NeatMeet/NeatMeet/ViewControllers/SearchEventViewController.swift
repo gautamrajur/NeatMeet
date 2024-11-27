@@ -18,6 +18,7 @@ extension LandingViewController: UISearchBarDelegate {
                 event.name.lowercased().contains(searchText.lowercased())
             }
         }
+        updateNoEventTextVisibility(isEmpty: displayedEvents.isEmpty)
         self.landingView.eventTableView.reloadData()
     }
 }
