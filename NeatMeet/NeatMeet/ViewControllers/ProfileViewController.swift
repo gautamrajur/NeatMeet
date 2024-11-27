@@ -132,22 +132,25 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                            let eventDate = data["eventDate"] as? Timestamp,
                            let eDetails = data["eventDescription"] as? String
                         {
-                            let event = Event(
-                                id: document.documentID,
-                                name: name,
-                                likesCount: likesCount,
-                                datePublished: datePublished.dateValue(),
-                                publishedBy: publishedBy,
-                                address: address,
-                                city: city,
-                                state: state,
-                                imageUrl: imageUrl,
-                                eventDate: eventDate.dateValue(),
-                                eventDescription: eDetails
+                            
+                            events.append(
+                                Event(
+                                    id: document.documentID,
+                                    name: name,
+                                    likesCount: likesCount,
+                                    datePublished: datePublished.dateValue(),
+                                    publishedBy: publishedBy,
+                                    address: address,
+                                    city: city,
+                                    state: state,
+                                    imageUrl: imageUrl,
+                                    eventDate: eventDate.dateValue(),
+                                    eventDescription: eDetails
+                                )
                             )
-                            events.append(event)
-                            events.sort { $0.eventDate > $1.eventDate }
+                            events.sort { $1.eventDate > $0.eventDate }
                             self.profileScreen.eventTableView.reloadData()
+                            
                         }
                     }
                 }
@@ -284,7 +287,10 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         cell.eventNameLabel?.text = event.name
         cell.eventLocationLabel?.text = event.address
-        cell.eventDateTimeLabel?.text = event.eventDate.description
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d, HH:mm"
+        cell.eventDateTimeLabel?.text = dateFormatter.string(
+                    from: event.eventDate)
         cell.eventLikeLabel?.text = (String)(event.likesCount)
         if let imageUrl = URL(string: event.imageUrl) {
             cell.eventImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "event_ph_square"))
