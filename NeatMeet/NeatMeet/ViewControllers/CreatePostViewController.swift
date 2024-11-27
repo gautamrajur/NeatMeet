@@ -45,11 +45,11 @@ class CreatePostViewController: UIViewController {
             self.createPost.placeholderLabel.isHidden = true
             fetchEventDetails(for: eventId)
         }
-
+        
+        addSaveButton()
         hideKeyboardOnTapOutside()
         addNotificationCenter()
         createPost.buttonTakePhoto.menu = getMenuImagePicker()
-        addSaveButton()
         configureButtonActions()
         requestLocation()
 
@@ -180,9 +180,10 @@ class CreatePostViewController: UIViewController {
 
     func addSaveButton() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(
-            customView: createPost.saveButton)
-        createPost.saveButton.addTarget(
-            self, action: #selector(onTapPost), for: .touchUpInside)
+                    barButtonSystemItem: .save,
+                    target: self,
+                    action: #selector(onTapPost)
+                )
     }
 
     private func configureButtonActions() {

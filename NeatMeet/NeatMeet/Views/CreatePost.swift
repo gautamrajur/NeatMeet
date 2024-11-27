@@ -23,7 +23,6 @@ class CreatePost: UIView {
     var cityButton: UIButton!
     var cityDropButton: UIButton!
     var stateDropButton: UIButton!
-    var saveButton: UIButton!
     var buttonTakePhoto: UIButton!
     var choosePhotoLabel: UILabel!
     
@@ -39,7 +38,6 @@ class CreatePost: UIView {
         setUpDescriptionTextField()
         setUpStatePicker()
         setUpCityPicker()
-        setUpSaveButton()
         setupbuttonTakePhoto()
         setUpChoosePhoto()
         setUpActivityIndicator()
@@ -52,12 +50,6 @@ class CreatePost: UIView {
         contentWrapper.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(contentWrapper)
     }
-    
-    func setUpSaveButton(){
-        saveButton = UIButton(type: .system)
-        saveButton.setTitle("Save", for: .normal)
-    }
-    
     
     func setUpActivityIndicator() {
         activityIndicator = UIActivityIndicatorView(style: .medium)
