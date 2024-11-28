@@ -253,12 +253,14 @@ class LandingViewController: UIViewController {
     @objc func fetchEvents(notification: Notification) {
         guard let userInfo = notification.userInfo,
             let state = userInfo["state"] as? State,
-            let city = userInfo["city"] as? City
+            let city = userInfo["city"] as? City,
+            let prevState = userInfo["prevState"] as? State,
+            let prevCity = userInfo["prevCity"] as? City
         else {
             return
         }
-        if state.isoCode == selectedState.isoCode
-            && city.name == selectedCity.name
+        if (state.isoCode == selectedState.isoCode || prevState.isoCode == selectedState.isoCode)
+            && (city.name == selectedCity.name || prevCity.name == selectedCity.name)
         {
             Task {
                 await getAllEvents()

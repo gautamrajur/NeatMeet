@@ -27,6 +27,8 @@ class CreatePostViewController: UIViewController {
     var citiesList: [City] = []
     var statesList: [State] = []
     var selectedState: State = State(name: "", isoCode: "")
+    var prevSelectedState: State?
+    var prevSelectedCity: City?
     var selectedCity: City = City(name: "", stateCode: "")
     var eventDetails: Event?
     var eventId: String?
@@ -85,12 +87,33 @@ class CreatePostViewController: UIViewController {
         createPost.locationTextField.text = event.address
         createPost.descriptionTextField.text = event.eventDescription
         createPost.timePicker.date = event.eventDate
-
-        selectedState = State(name: event.state, isoCode: "")  // Adjust as needed
-        selectedCity = City(name: event.city, stateCode: "")
-
-        createPost.stateButton.setTitle(selectedState.name, for: .normal)
-        createPost.cityButton.setTitle(selectedCity.name, for: .normal)
+        
+        Task {
+            // Get all states first
+            self.statesList = await self.locationAPI.getAllStates()
+            
+            if let matchingState = self.statesList.first(where: {
+                $0.name == event.state
+            }) {
+                selectedState = State(name: matchingState.name, isoCode: matchingState.isoCode)
+                prevSelectedState = selectedState
+                self.citiesList = await self.locationAPI.getAllCities(
+                    stateCode: matchingState.isoCode)
+                if let matchingCity = self.citiesList.first(where: {
+                    $0.name.lowercased() == event.city.lowercased()
+                }) {
+                    self.selectedCity = matchingCity
+                    prevSelectedCity = selectedCity
+                } else {
+                    self.selectedCity =
+                    self.citiesList.first
+                    ?? City(name: "", stateCode: "")
+                }
+            }
+            
+            createPost.stateButton.setTitle(selectedState.name, for: .normal)
+            createPost.cityButton.setTitle(selectedCity.name, for: .normal)
+        }
         if !event.imageUrl.isEmpty {
             loadImage(from: event.imageUrl)
         }
@@ -360,7 +383,8 @@ class CreatePostViewController: UIViewController {
                         // Remove eventId from the likes collections of all users
                         self.removeEventFromUserLikes(eventId: eventId) {
                             self.showPost.eventId = eventId
-                            NotificationCenter.default.post(name: .contentEdited, object: nil)
+                            let data = ["state": self.selectedState, "city": self.selectedCity, "prevState": self.prevSelectedState ?? self.selectedState, "prevCity": self.prevSelectedCity ?? self.selectedCity]
+                            NotificationCenter.default.post(name: .newEventAdded, object: nil, userInfo: data)
                             self.navigationController?.popViewController(animated: true)
                         }
                     }
@@ -385,6 +409,8 @@ class CreatePostViewController: UIViewController {
                     
                          self.showPost.eventId = documentID
                          self.showAlert(title: "Hurray!", message: "Event created SUCESSFULLY !") {
+                             let data = ["state": self.selectedState, "city": self.selectedCity, "prevState": self.prevSelectedState ?? self.selectedState, "prevCity": self.prevSelectedCity ?? self.selectedCity]
+                             NotificationCenter.default.post(name: .newEventAdded, object: nil, userInfo: data)
                              self.navigationController?.popViewController(animated: true)
                          }
                      }
