@@ -10,7 +10,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import UIKit
 
-class LandingViewController: UIViewController {
+class LandingViewController: BaseViewController {
 
     let landingView = LandingView()
     var navController: UINavigationController?
