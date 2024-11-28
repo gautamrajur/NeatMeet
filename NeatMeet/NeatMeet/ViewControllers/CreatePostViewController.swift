@@ -409,7 +409,7 @@ class CreatePostViewController: UIViewController {
                          let documentID = docRef.documentID
                     
                          self.showPost.eventId = documentID
-                         self.showAlert(title: "Hurray!", message: "Event created SUCESSFULLY !") {
+                         self.showAlert(title: "Success", message: "Event created successfully") {
                              let data = ["state": self.selectedState, "city": self.selectedCity, "prevState": self.prevSelectedState ?? self.selectedState, "prevCity": self.prevSelectedCity ?? self.selectedCity]
                              NotificationCenter.default.post(name: .newEventAdded, object: nil, userInfo: data)
                              self.navigationController?.popViewController(animated: true)

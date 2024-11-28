@@ -67,7 +67,7 @@ class ShowPostViewController: UIViewController {
         checkIfUserLikedEvent(userId: userId, eventId: eventId) { [weak self] alreadyLiked in
             if alreadyLiked {
                 print("User has already liked this event.")
-                self?.showAlert(title: "Hey !", message: "User has already liked this event.")
+                self?.showAlert(title: "Alert", message: "You have already liked this event.")
             } else {
                 self?.incrementLikeCount(eventId: self?.eventId ?? "") {
                     self?.recordUserLike(userId: userId, eventId: self?.eventId ?? "")
