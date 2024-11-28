@@ -29,17 +29,16 @@ class ShowPostViewController: UIViewController {
     
     func addEditNotificationObserver() {
         NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(refreshScreen(notification:)),
-            name: .contentEdited,
-            object: nil
-        )
+            self, selector: #selector(fetchUpdatedDeta(notification:)),
+            name: .newEventAdded, object: nil)
     }
-  
-    @objc func refreshScreen(notification: Notification) {
-        fetchEventAndDisplay(eventId: eventId)
+    
+    @objc func fetchUpdatedDeta(notification: Notification) {
+            Task {
+                fetchEventAndDisplay(eventId: eventId)
+            }
+        
     }
-
 
     func setUpEditButton() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(
