@@ -313,7 +313,7 @@ extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
     func addEditNotiifcationObservor() {
         NotificationCenter.default.addObserver(
             self, selector: #selector(displayAllEvents),
-            name: .contentEdited, object: nil)
+            name: .newEventAdded, object: nil)
         NotificationCenter.default.addObserver(
             self, selector: #selector(displayAllEvents),
             name: .likeUpdated, object: nil)
