@@ -9,6 +9,15 @@ import Alamofire
 import Foundation
 
 public class LocationAPI {
+    
+    func getHeaders() -> HTTPHeaders {
+        return [
+            "x-rapidapi-key":
+                "fb54764b3bmshed8a057a9dfc48bp1ff81ejsn950b6e626f84",
+            "x-rapidapi-host":
+                "country-state-city-search-rest-api.p.rapidapi.com",
+        ]
+    }
 
     func getAllCities(stateCode: String) async -> [City] {
         var citiesList: [City] = []
@@ -18,12 +27,7 @@ public class LocationAPI {
             "countrycode": "US",
             "statecode": stateCode,
         ]
-        let headers: HTTPHeaders = [
-            "x-rapidapi-key":
-                "1da2d5d98bmsh2ca443e33bccf2bp19c5a1jsnce71eed655cc",
-            "x-rapidapi-host":
-                "country-state-city-search-rest-api.p.rapidapi.com",
-        ]
+        let headers: HTTPHeaders = getHeaders()
         let request = AF.request(
             url, method: .get, parameters: parameters, headers: headers)
         let response = await request.serializingData().response
@@ -60,12 +64,7 @@ public class LocationAPI {
         let parameters: [String: String] = [
             "countrycode": "us",
         ]
-        let headers: HTTPHeaders = [
-            "x-rapidapi-key":
-                "1da2d5d98bmsh2ca443e33bccf2bp19c5a1jsnce71eed655cc",
-            "x-rapidapi-host":
-                "country-state-city-search-rest-api.p.rapidapi.com",
-        ]
+        let headers: HTTPHeaders = getHeaders()
         let request = AF.request(
             url, method: .get, parameters: parameters, headers: headers)
         let response = await request.serializingData().response
