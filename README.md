@@ -34,9 +34,6 @@ To set up and run NeatMeet locally, follow these steps:
    pod install
    ```
 
-3. Open the project in Xcode:
-   ```bash
-   open NeatMeet.xcworkspace
-   ```
+3. Open the project in Xcode via NeatMeet.xcworkspace
 
 4. Build and run the application on a simulator or physical device.
