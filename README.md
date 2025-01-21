@@ -14,11 +14,20 @@ NeatMeet is a mobile application developed as part of a Mobile Application Devel
 - **Interactive Voting System**: Engage with events by upvoting or downvoting, helping others discover popular activities.  
 - **Personalized User Profile**: Customize your profile with an editable name and profile picture while tracking all events you've posted.  
 
+
 ## Tech Stack
 
 - **iOS Development**: Swift
 - **Firebase**: Authentication, Firestore, Storage
 - **CocoaPods**: Dependency management
+
+## App Images!
+![Simulator Screenshot - iPhone 16 Pro - 2025-01-21 at 16 03 43 Small](https://github.com/user-attachments/assets/7d4707f1-f42a-4b87-a173-d289874563de)
+![Simulator Screenshot - iPhone 16 Pro - 2025-01-21 at 16 02 49 Small](https://github.com/user-attachments/assets/a43baeec-196e-48f8-8c9b-17556b04cdce)
+![Simulator Screenshot - iPhone 16 Pro - 2025-01-21 at 16 02 45 Small](https://github.com/user-attachments/assets/48fa7d43-252a-463d-99ea-22b84317b783)
+
+
+
 
 ## Installation
 
