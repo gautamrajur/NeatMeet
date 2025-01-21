@@ -26,7 +26,7 @@ To set up and run NeatMeet locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone git@github.com:damyantjain/NeatMeet.git
+   git@github.com:gautamrajur/NeatMeet.git
    ```
 
 2. Install CocoaPods dependencies:
